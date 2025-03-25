@@ -1,0 +1,259 @@
+openapi: 3.1.1
+info:
+  title: '短网址'
+  description: '短网址接口'
+  contact:
+    name: 'Jetsung Chan'
+    url: 'https://github.com/jetsung'
+    email: 'i@jetsung.com'
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html    
+  version: 0.1.0
+servers:
+  - url: http://127.0.0.1:8080/api/v1
+tags:
+  - name: shorten
+    description: 短址
+paths:
+  /{code}:
+    get:
+      tags:
+        - shorten
+      summary: '跳转到长网址'
+      description: '通过短码跳转到长网址'
+      operationId: 'redirectShorten'
+      parameters:
+        - name: code
+          in: path
+          description: '短码'
+          required: true
+          schema:
+            type: string
+            maxLength: 8
+            pattern: '^[a-zA-Z0-9]+$'
+            example: 'aBc123'
+      responses:
+        '307':
+          description: '跳转成功'
+        '400':
+          description: '参数错误'
+        '404':
+          description: '短码不存在'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /shorten:
+    post:
+      tags:
+        - shorten
+      summary: '添加短址'
+      description: '添加一个新的短网址'
+      operationId: 'addShorten'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shorten'
+      responses:
+        '201':
+          description: '短网址创建成功'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
+        '400':
+          description: '参数错误'
+        '422':
+          description: '创建失败'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"           
+    get:
+      tags:
+        - shorten
+      summary: '获取所有短址信息'
+      description: '获取所有短址信息'
+      operationId: 'getShortens'
+      responses:
+        '200':
+          description: '操作成功'
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/ShortenResponse'          
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /shorten/{code}:
+    get:
+      tags:
+        - shorten
+      summary: '获取短址信息'
+      description: '通过短码获取短址信息'
+      operationId: 'getShorten'
+      parameters:
+        - name: code
+          in: path
+          description: '短码'
+          required: true
+          schema:
+            type: string
+            maxLength: 8
+            pattern: '^[a-zA-Z0-9]+$'
+            example: 'aBc123'
+      responses:
+        '200':
+          description: '操作成功'
+        '400':
+          description: '参数错误'
+        '404':
+          description: '短码不存在'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      tags:
+        - shorten
+      summary: '更新短址'
+      description: '更新一个短网址'
+      operationId: 'updateShorten'
+      parameters:
+        - name: code
+          in: path
+          description: '短码'
+          required: true
+          schema:
+            type: string
+            maxLength: 8
+            pattern: '^[a-zA-Z0-9]+$'
+            example: 'aBc123'      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortenUpdate'
+      responses:
+        '200':
+          description: '操作成功'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
+        '400':
+          description: '参数错误'
+        '404':
+          description: '短码不存在'
+        '422':
+          description: '更新失败'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"       
+    delete:
+      tags:
+        - shorten
+      summary: '删除短址'
+      description: '删除一个短网址'
+      operationId: 'deleteShorten'
+      parameters:
+        - name: code
+          in: path
+          description: '短码'
+          required: true
+          schema:
+            type: string
+            maxLength: 8
+            pattern: '^[a-zA-Z0-9]+$'
+            example: 'aBc123'  
+      responses:
+        '200':
+          description: '操作成功'
+        '400':
+          description: '参数错误'
+        '404':
+          description: '短码不存在'
+        '422':
+          description: '更新失败'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Shorten:
+      type: object
+      properties:
+        originalUrl:
+          type: string
+          format: uri
+          description: '原始长网址'
+        code:
+          type: string
+          description: '短码'
+          pattern: '^[a-zA-Z0-9]+$'          
+        describe:
+          type: string
+          description: '长网址描述'
+      required:
+        - originalUrl
+    ShortenUpdate:
+      type: object
+      properties:
+        originalUrl:
+          type: string
+          format: uri
+          description: '原始长网址'      
+        describe:
+          type: string
+          description: '长网址描述'
+      required:
+        - originalUrl   
+    ShortenResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: '短码'
+          pattern: '^[a-zA-Z0-9]+$'        
+        shortUrl:
+          type: string
+          format: uri
+          description: '短网址'
+        originalUrl:
+          type: string
+          format: uri
+          description: '原始长网址'
+        describe:
+          type: string
+          description: '长网址描述'          
+    Error:  # 新增Error对象定义
+      type: object
+      properties:
+        code:
+          type: integer
+          description: '错误代码'
+        message:
+          type: string
+          description: '错误信息'          
