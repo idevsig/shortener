@@ -23,6 +23,7 @@ cmd/server/server
 coverage.out
 internal/dal/db/dao/gen_test.db
 bin
+dist/
 
-config/config.dev.toml
-helloworld
+tmp/
+shortener
