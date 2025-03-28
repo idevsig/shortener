@@ -57,6 +57,11 @@ func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 		reqJson.Code = pkg.GenerateCode()
 	}
 
+	if len(reqJson.Code) > 16 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": "短码长度不能超过16个字符"})
+		return
+	}
+
 	err, data := t.logic.ShortenAdd(reqJson.Code, reqJson.OriginalURL, reqJson.Describe)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 2002, "msg": err.Error()})

@@ -2,10 +2,10 @@
 
 ## TODO
 - [x] 实现全部功能接口
-- [ ] 添加支持数据库
+- [x]] 添加支持数据库
     - [x] 支持 SQLite
-    - [ ] 支持 PostgreSQL
-    - [ ] 支持 MySQL
+    - [x] 支持 PostgreSQL
+    - [x] 支持 MySQL
 - [ ] 添加 Redis 缓存
 - [ ] 制作 CLI 工具
 - [ ] 添加测试

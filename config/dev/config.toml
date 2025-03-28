@@ -14,3 +14,22 @@ type = "sqlite"
 
 [database.sqlite]
 path = "data/shortener.db"
+
+[database.postgres]
+host = "localhost"
+port = 5432
+user = "postgres"
+password = "postgres"
+database = "shortener"
+sslmode = "disable"
+timezone = "Asia/Shanghai"
+
+[database.mysql]
+host = "localhost"
+port = 3306
+user = "root"
+password = "root"
+database = "shortener"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"

@@ -181,7 +181,8 @@ components:
         code:
           type: string
           description: '短码'
-          pattern: '^[a-zA-Z0-9]+$'          
+          maxLength: 16
+          pattern: '^[a-zA-Z0-9]+$'
         describe:
           type: string
           description: '长网址描述'
