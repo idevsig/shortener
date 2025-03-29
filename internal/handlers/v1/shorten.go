@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.dsig.cn/idev/shortener/internal/logics"
-	"go.dsig.cn/idev/shortener/internal/pkg"
-	"go.dsig.cn/idev/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/logics"
+	"go.dsig.cn/shortener/internal/pkg"
+	"go.dsig.cn/shortener/internal/types"
 )
 
 // ShortenHandler 短链接处理器

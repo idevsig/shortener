@@ -1,5 +1,5 @@
 package shared
 
-import "go.dsig.cn/idev/shortener/internal/types"
+import "go.dsig.cn/shortener/internal/types"
 
 var GlobalShorten *types.Shorten

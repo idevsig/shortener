@@ -2,9 +2,9 @@
 project_name := `basename $(pwd)`
 
 # Enable cross-platform compatibility by default
-; CGO_ENABLED := "0"
+# CGO_ENABLED := "0"
 
-; GOFLAGS := "-trimpath"
+# GOFLAGS := "-trimpath"
 
 # Output directory for builds
 dist_dir := "dist"

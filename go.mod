@@ -1,4 +1,4 @@
-module go.dsig.cn/idev/shortener
+module go.dsig.cn/shortener
 
 go 1.24.1
 

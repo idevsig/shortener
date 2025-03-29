@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
-	"go.dsig.cn/idev/shortener/internal/shared"
-	"go.dsig.cn/idev/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/shared"
+	"go.dsig.cn/shortener/internal/types"
 )
 
 // shorten 初始化短链接

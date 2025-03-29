@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"go.dsig.cn/idev/shortener/internal/dal/db/model"
-	"go.dsig.cn/idev/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/dal/db/model"
+	"go.dsig.cn/shortener/internal/types"
 	"gorm.io/gorm"
 )
 

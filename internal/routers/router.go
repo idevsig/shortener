@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.dsig.cn/idev/shortener/internal/handlers"
+	"go.dsig.cn/shortener/internal/handlers"
 )
 
 func NewRouter() *gin.Engine {

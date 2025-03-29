@@ -3,7 +3,7 @@ package pkg
 import (
 	"math/rand"
 
-	"go.dsig.cn/idev/shortener/internal/shared"
+	"go.dsig.cn/shortener/internal/shared"
 )
 
 // GenerateCode 生成短码(6位)

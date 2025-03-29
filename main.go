@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "go.dsig.cn/idev/shortener/internal/bootstrap"
+	_ "go.dsig.cn/shortener/internal/bootstrap"
 
 	"github.com/spf13/viper"
-	"go.dsig.cn/idev/shortener/internal/routers"
+	"go.dsig.cn/shortener/internal/routers"
 )
 
 func main() {

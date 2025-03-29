@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/spf13/viper"
-	"go.dsig.cn/idev/shortener/internal/dal/db/model"
-	"go.dsig.cn/idev/shortener/internal/shared"
+	"go.dsig.cn/shortener/internal/dal/db/model"
+	"go.dsig.cn/shortener/internal/shared"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
