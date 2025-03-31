@@ -5,7 +5,7 @@ const TableNameUrlsModel = "urls"
 
 // Urls 短网址表
 type Urls struct {
-	ID          int64  `gorm:"column:id;primaryKey;autoIncrement;type:bigint" json:"id"`
+	ID          int64  `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	ShortCode   string `gorm:"column:short_code;type:varchar(16);uniqueIndex;not null" json:"short_code"`
 	OriginalURL string `gorm:"column:original_url;type:varchar(2048);not null" json:"original_url"`
 	Describe    string `gorm:"column:describe;type:varchar(255)" json:"describe"`

@@ -22,7 +22,7 @@ func shorten() {
 		charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	}
 
-	shared.GlobalShorten = &types.Shorten{
+	shared.GlobalShorten = &types.CfgShorten{
 		Length:  length,
 		Charset: charset,
 	}

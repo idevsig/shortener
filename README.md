@@ -2,7 +2,7 @@
 
 ## TODO
 - [x] 实现全部功能接口
-- [x]] 添加支持数据库
+- [x] 添加支持数据库
     - [x] 支持 SQLite
     - [x] 支持 PostgreSQL
     - [x] 支持 MySQL

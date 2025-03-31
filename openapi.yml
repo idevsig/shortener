@@ -17,11 +17,11 @@ tags:
   - name: shorten
     description: 短址
 paths:
-  /shorten:
+  /shortens:
     post:
       tags:
         - shorten
-      summary: '添加短址'
+      summary: '添加短网址'
       description: '添加一个新的短网址'
       operationId: 'addShorten'
       requestBody:
@@ -38,21 +38,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShortenResponse'
         '400':
-          description: '参数错误'
-        '422':
+          description: '请求错误'
+        '409':
+          description: '短网址已存在'
+        '500':
           description: '操作失败'
         default:
           description: '未知错误'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"           
+                $ref: "#/components/schemas/Error"  
+
     get:
       tags:
         - shorten
       summary: '获取所有短址信息'
       description: '获取所有短址信息'
       operationId: 'getShortens'
+      parameters:
+        - name: page
+          in: query
+          description: '页码'
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: '每页条数'
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: sort_by
+          in: query
+          description: '排序字段'
+          required: false
+          schema:
+            type: string
+            default: 'created_time'
+            enum:
+              - created_time
+              - updated_time
+        - name: order
+          in: query
+          description: '排序方向'
+          required: false
+          schema:
+            type: string
+            default: 'desc'
+            enum:
+              - asc
+              - desc
+        - name: status
+          in: query
+          description: '状态'
+          required: false
+          schema:
+            type: integer
+            default: 0
+            enum:
+              - 0
+              - 1
+              - 2
       responses:
         '200':
           description: '操作成功'
@@ -68,12 +117,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+                
   /shorten/{code}:
     get:
       tags:
         - shorten
-      summary: '获取短址信息'
-      description: '通过短码获取短址信息'
+      summary: '获取短网址信息'
+      description: '通过短码获取短网址信息'
       operationId: 'getShorten'
       parameters:
         - name: code
@@ -82,26 +132,33 @@ paths:
           required: true
           schema:
             type: string
-            maxLength: 8
+            maxLength: 16
             pattern: '^[a-zA-Z0-9]+$'
             example: 'aBc123'
       responses:
         '200':
           description: '操作成功'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
         '400':
-          description: '参数错误'
+          description: '请求错误'
         '404':
-          description: '短码不存在'
+          description: '短网址不存在'
+        '500':
+          description: '操作失败'
         default:
           description: '未知错误'
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
     put:
       tags:
         - shorten
-      summary: '更新短址'
+      summary: '更新短网址'
       description: '更新一个短网址'
       operationId: 'updateShorten'
       parameters:
@@ -111,7 +168,7 @@ paths:
           required: true
           schema:
             type: string
-            maxLength: 8
+            maxLength: 16
             pattern: '^[a-zA-Z0-9]+$'
             example: 'aBc123'      
       requestBody:
@@ -128,21 +185,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ShortenResponse'
         '400':
-          description: '参数错误'
+          description: '请求错误'
         '404':
           description: '短码不存在'
-        '422':
+        '500':
           description: '操作失败'
         default:
           description: '未知错误'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"       
+                $ref: "#/components/schemas/Error" 
+
     delete:
       tags:
         - shorten
-      summary: '删除短址'
+      summary: '删除短网址'
       description: '删除一个短网址'
       operationId: 'deleteShorten'
       parameters:
@@ -156,11 +214,13 @@ paths:
             pattern: '^[a-zA-Z0-9]+$'
             example: 'aBc123'  
       responses:
-        '200':
+        '204':
           description: '操作成功'
         '400':
-          description: '参数错误'
-        '422':
+          description: '请求错误'
+        '404':
+          description: '短网址不存在'
+        '500':
           description: '操作失败'
         default:
           description: '未知错误'
@@ -188,6 +248,8 @@ components:
           description: '长网址描述'
       required:
         - original_url
+        - code
+
     ShortenUpdate:
       type: object
       properties:
@@ -200,12 +262,17 @@ components:
           description: '长网址描述'
       required:
         - original_url   
+
     ShortenResponse:
       type: object
       properties:
+        id:
+          type: integer
+          description: 'ID'
         code:
           type: string
           description: '短码'
+          maxLength: 16
           pattern: '^[a-zA-Z0-9]+$'        
         short_url:
           type: string
@@ -217,13 +284,23 @@ components:
           description: '原始长网址'
         describe:
           type: string
-          description: '长网址描述'          
-    Error:  # 新增Error对象定义
+          description: '长网址描述' 
+        status:
+          type: integer
+          description: '状态'
+        created_time:
+          type: string
+          description: '创建时间'
+        updated_time:
+          type: string
+          description: '更新时间'      
+
+    Error: 
       type: object
       properties:
-        code:
+        errcode:
           type: integer
           description: '错误代码'
-        message:
+        errinfo:
           type: string
           description: '错误信息'          

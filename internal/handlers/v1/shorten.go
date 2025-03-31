@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/logics"
 	"go.dsig.cn/shortener/internal/pkg"
 	"go.dsig.cn/shortener/internal/types"
@@ -26,13 +27,18 @@ func NewShortenHandler() *ShortenHandler {
 func (t *ShortenHandler) ShortenRedirect(c *gin.Context) {
 	var reqUri types.ReqCode
 	if err := c.ShouldBindUri(&reqUri); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
-	err, data := t.logic.ShortenOne(reqUri.Code)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"code": 2002, "msg": err.Error()})
+	errCode, data := t.logic.ShortenFind(reqUri.Code)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeNotFound {
+			c.JSON(http.StatusNotFound, errInfo)
+		} else {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		}
 		return
 	}
 
@@ -48,7 +54,7 @@ func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&reqJson); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
@@ -58,77 +64,52 @@ func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 	}
 
 	if len(reqJson.Code) > 16 {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": "短码长度不能超过16个字符"})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeBadRequest))
 		return
 	}
 
-	err, data := t.logic.ShortenAdd(reqJson.Code, reqJson.OriginalURL, reqJson.Describe)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 2002, "msg": err.Error()})
+	errCode, data := t.logic.ShortenAdd(reqJson.Code, reqJson.OriginalURL, reqJson.Describe)
+	if errCode != 0 {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeConflict {
+			c.JSON(http.StatusConflict, errInfo)
+		} else {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		}
 		return
 	}
 
-	item := types.ResShorten{
-		Code:        reqJson.Code,
-		ShortURL:    data.ShortURL,
-		OriginalURL: data.OriginalURL,
-		Describe:    data.Describe,
-	}
-
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": item})
+	c.Header("Location", c.Request.RequestURI+"/"+data.Code)
+	c.JSON(http.StatusCreated, data)
 }
 
-// ShortenList 获取短链接列表
-func (t *ShortenHandler) ShortenList(c *gin.Context) {
-	err, data := t.logic.ShortenAll()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 2002, "msg": err.Error()})
-		return
-	}
-
-	items := make([]types.ResShorten, 0)
-
-	for _, item := range data {
-		items = append(items, types.ResShorten{
-			Code:        item.ShortCode,
-			ShortURL:    item.ShortURL,
-			OriginalURL: item.OriginalURL,
-			Describe:    item.Describe,
-		})
-	}
-
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": items})
-}
-
-// ShortenFind 获取短链接
-func (t *ShortenHandler) ShortenFind(c *gin.Context) {
+// ShortenDelete 删除短链接
+func (t *ShortenHandler) ShortenDelete(c *gin.Context) {
 	var reqUri types.ReqCode
 	if err := c.ShouldBindUri(&reqUri); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
-	err, data := t.logic.ShortenOne(reqUri.Code)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"code": 2002, "msg": err.Error()})
+	errCode := t.logic.ShortenDelete(reqUri.Code)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeNotFound {
+			c.JSON(http.StatusNotFound, errInfo)
+		} else {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		}
 		return
 	}
 
-	item := types.ResShorten{
-		Code:        reqUri.Code,
-		ShortURL:    data.ShortURL,
-		OriginalURL: data.OriginalURL,
-		Describe:    data.Describe,
-	}
-
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": item})
+	c.JSON(http.StatusNoContent, nil)
 }
 
 // ShortenUpdate 更新短链接
 func (t *ShortenHandler) ShortenUpdate(c *gin.Context) {
 	var reqUri types.ReqCode
 	if err := c.ShouldBindUri(&reqUri); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
@@ -137,39 +118,69 @@ func (t *ShortenHandler) ShortenUpdate(c *gin.Context) {
 		Describe    string `json:"describe"`
 	}
 	if err := c.ShouldBindJSON(&reqJson); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
-	err, data := t.logic.ShortenUpdate(reqUri.Code, reqJson.OriginalURL, reqJson.Describe)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 2002, "msg": err.Error()})
+	errCode, data := t.logic.ShortenUpdate(reqUri.Code, reqJson.OriginalURL, reqJson.Describe)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeNotFound {
+			c.JSON(http.StatusNotFound, errInfo)
+		} else {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		}
 		return
 	}
 
-	item := types.ResShorten{
-		Code:        reqUri.Code,
-		ShortURL:    data.ShortURL,
-		OriginalURL: data.OriginalURL,
-		Describe:    data.Describe,
-	}
-
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success", "data": item})
+	c.JSON(http.StatusOK, data)
 }
 
-// ShortenDelete 删除短链接
-func (t *ShortenHandler) ShortenDelete(c *gin.Context) {
+// ShortenFind 获取短链接
+func (t *ShortenHandler) ShortenFind(c *gin.Context) {
 	var reqUri types.ReqCode
 	if err := c.ShouldBindUri(&reqUri); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": 2001, "msg": err.Error()})
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
 
-	err := t.logic.ShortenDelete(reqUri.Code)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 2002, "msg": err.Error()})
+	errCode, data := t.logic.ShortenFind(reqUri.Code)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeNotFound {
+			c.JSON(http.StatusNotFound, errInfo)
+		} else {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"code": 0, "msg": "success"})
+	c.JSON(http.StatusOK, data)
+}
+
+// ShortenList 获取短链接列表
+func (t *ShortenHandler) ShortenList(c *gin.Context) {
+	var reqQuery types.ReqQuery
+	if err := c.ShouldBindQuery(&reqQuery); err != nil {
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
+		return
+	}
+
+	errCode, data, pageInfo := t.logic.ShortenAll(reqQuery)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		if errCode == ecodes.ErrCodeDatabaseError {
+			c.JSON(http.StatusInternalServerError, errInfo)
+		} else {
+			c.JSON(http.StatusBadRequest, errInfo)
+		}
+		return
+	}
+
+	result := types.ResSuccess{
+		Data: data,
+		Meta: pageInfo,
+	}
+
+	c.JSON(http.StatusOK, result)
 }

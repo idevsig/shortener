@@ -39,11 +39,11 @@ func NewRouter() *gin.Engine {
 	apiV1 := g.Group("/api/v1")
 	apiV1.Use()
 	{
-		apiV1.POST("/shorten", shortener.ShortenAdd)
-		apiV1.GET("/shorten", shortener.ShortenList)
-		apiV1.GET("/shorten/:code", shortener.ShortenFind)
-		apiV1.PUT("/shorten/:code", shortener.ShortenUpdate)
-		apiV1.DELETE("/shorten/:code", shortener.ShortenDelete)
+		apiV1.POST("/shortens", shortener.ShortenAdd)
+		apiV1.GET("/shortens", shortener.ShortenList)
+		apiV1.GET("/shortens/:code", shortener.ShortenFind)
+		apiV1.PUT("/shortens/:code", shortener.ShortenUpdate)
+		apiV1.DELETE("/shortens/:code", shortener.ShortenDelete)
 	}
 
 	// 短链接跳转路由

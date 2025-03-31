@@ -2,4 +2,4 @@ package shared
 
 import "go.dsig.cn/shortener/internal/types"
 
-var GlobalShorten *types.Shorten
+var GlobalShorten *types.CfgShorten

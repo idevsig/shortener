@@ -12,6 +12,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	_ "modernc.org/sqlite"
 )
 
@@ -102,7 +103,9 @@ func database() {
 		panic("database type not support: " + dbType)
 	}
 
-	shared.GlobalDB, err = gorm.Open(dialector, &gorm.Config{})
+	shared.GlobalDB, err = gorm.Open(dialector, &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}
@@ -117,4 +120,8 @@ func migrate() {
 	if err != nil {
 		panic("failed to migrate database: " + err.Error())
 	}
+
+	shared.GlobalDB.Migrator().CurrentDatabase()              // 查看数据库类型
+	shared.GlobalDB.Migrator().GetTables()                    // 查看所有表
+	shared.GlobalDB.Migrator().HasColumn(&model.Urls{}, "id") // 检查字段
 }
