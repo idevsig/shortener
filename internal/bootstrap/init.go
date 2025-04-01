@@ -11,6 +11,7 @@ func init() {
 	viper.SetConfigName("config")
 	// viper.SetConfigType("toml")
 	viper.AddConfigPath("./config/dev")
+	viper.AddConfigPath("./config/prod")
 	viper.AddConfigPath("./config")
 	viper.AddConfigPath(".")
 
@@ -26,9 +27,12 @@ func init() {
 
 // 初始化
 func bootstrap() {
-	// init db
-	database()
-
 	// init shorten
-	shorten()
+	initShortenConfig()
+
+	// init db
+	initDB()
+
+	// init cache
+	initCache()
 }

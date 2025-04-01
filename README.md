@@ -6,7 +6,7 @@
     - [x] 支持 SQLite
     - [x] 支持 PostgreSQL
     - [x] 支持 MySQL
-- [ ] 添加 Redis 缓存
+- [x] 添加 Redis 缓存
 - [ ] 制作 CLI 工具
 - [ ] 添加测试
 - [ ] 添加文档

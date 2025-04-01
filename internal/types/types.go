@@ -51,3 +51,9 @@ type CfgShorten struct {
 	Length  int    `json:"length"`
 	Charset string `json:"charset"`
 }
+
+// CfgCache 缓存配置
+type CfgCache struct {
+	Expire int    `json:"expire"`
+	Prefix string `json:"prefix"`
+}

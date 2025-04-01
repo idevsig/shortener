@@ -8,8 +8,8 @@ import (
 	"go.dsig.cn/shortener/internal/types"
 )
 
-// shorten 初始化短链接
-func shorten() {
+// initShortenConfig 初始化短链接配置
+func initShortenConfig() {
 	log.Println("shorten init")
 	length := viper.GetInt("shortener.code_length")
 	charset := viper.GetString("shortener.code_charset")

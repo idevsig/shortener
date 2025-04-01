@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bytedance/sonic"
+	"go.dsig.cn/shortener/internal/cache"
 	"go.dsig.cn/shortener/internal/dal/db/model"
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/types"
@@ -53,7 +55,10 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 		return ecodes.ErrCodeDatabaseError, result // 创建失败
 	}
 
-	// 3. 构造返回结果
+	// 3. 缓存短链接
+	cache.Set(cache.GetKey(newURL.ShortCode), newURL)
+
+	// 4. 构造返回结果
 	result = types.ResShorten{
 		ID:          newURL.ID,
 		Code:        newURL.ShortCode,
@@ -75,6 +80,10 @@ func (t *ShortenLogic) ShortenDelete(code string) int {
 	} else if res.RowsAffected == 0 {
 		return ecodes.ErrCodeNotFound
 	}
+
+	// 删除缓存
+	cache.Delete(cache.GetKey(code))
+
 	return ecodes.ErrCodeSuccess
 }
 
@@ -105,6 +114,8 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 		return ecodes.ErrCodeDatabaseError, result
 	}
 
+	cache.Set(cache.GetKey(existingURL.ShortCode), existingURL)
+
 	result = types.ResShorten{
 		ID:          existingURL.ID,
 		Code:        existingURL.ShortCode,
@@ -122,11 +133,24 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 // ShortenFind 获取短链接
 func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 	var data model.Urls
-	if err := t.db.Where("short_code = ?", code).First(&data).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ecodes.ErrCodeNotFound, types.ResShorten{}
+
+	// 1. 从缓存中获取
+	cacheKey := cache.GetKey(code)
+	if cacheData, err := cache.Get(cacheKey); err == nil {
+		// log.Printf("cacheData: %v", cacheData)
+		sonic.Unmarshal([]byte(cacheData), &data)
+	} else {
+		// 从数据库中获取
+		if err := t.db.Where("short_code = ?", code).First(&data).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ecodes.ErrCodeNotFound, types.ResShorten{}
+			}
+			return ecodes.ErrCodeDatabaseError, types.ResShorten{}
 		}
-		return ecodes.ErrCodeDatabaseError, types.ResShorten{}
+
+		// log.Printf("data: %v", data)
+		// 缓存短链接
+		cache.Set(cacheKey, data)
 	}
 
 	result := types.ResShorten{

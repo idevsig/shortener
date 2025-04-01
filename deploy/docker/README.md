@@ -1,7 +1,9 @@
 # Docker 部署
 
-## SQLite
-- [sqlite.compose.yml](sqlite.compose.yml)
+## Docker Compose
+- [`compose.yml`](compose.yml)
+
+### SQLite
 ```yaml
 services:
   shortener:
@@ -18,8 +20,7 @@ services:
       - ./config.toml:/app/config.toml      
 ```      
 
-## PostgreSQL
-- [postgres.compose.yml](postgres.compose.yml)
+### PostgreSQL
 ```yaml
 services:
   shortener:
@@ -48,8 +49,7 @@ services:
       - POSTGRES_DB=shortener      
 ```
 
-## MySQL
-- [mysql.compose.yml](mysql.compose.yml)
+### MySQL
 ```yaml
 services:
   shortener:
@@ -77,4 +77,27 @@ services:
       - MYSQL_PASSWORD=root
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=shortener
+```
+
+## 运行测试
+
+- 数据库
+```bash
+# sqlite test
+DATABASE_TYPE=sqlite docker compose --profile sqlite up -d
+DATABASE_TYPE=sqlite docker compose --profile sqlite down
+
+# mysql test
+DATABASE_TYPE=mysql docker compose --profile mysql up -d
+DATABASE_TYPE=mysql docker compose --profile mysql down
+
+# postgres test
+DATABASE_TYPE=postgres docker compose --profile postgres up -d
+DATABASE_TYPE=postgres docker compose --profile postgres down
+```
+
+# sqlite redis test
+```bash
+DATABASE_TYPE=sqlite docker compose --profile sqlite up -d
+DATABASE_TYPE=sqlite docker compose --profile sqlite down
 ```

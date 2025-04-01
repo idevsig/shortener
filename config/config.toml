@@ -1,5 +1,5 @@
 [server]
-address = "127.0.0.1:8080"
+address = ":8080"
 
 trusted-platform = ""
 
@@ -11,6 +11,7 @@ code_charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 [database]
 type = "sqlite"
+log_level = 0
 
 [database.sqlite]
 path = "data/shortener.db"
@@ -33,3 +34,14 @@ database = "shortener"
 charset = "utf8mb4"
 parse_time = true
 loc = "Local"
+
+[cache]
+type = "redis"
+expire = 3600
+prefix = "shorten:"
+
+[cache.redis]
+host = "localhost"
+port = 6379
+password = ""
+db = 0

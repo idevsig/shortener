@@ -42,7 +42,7 @@ func (t *ShortenHandler) ShortenRedirect(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, data.OriginalURL)
+	c.Redirect(http.StatusFound, data.OriginalURL)
 }
 
 // ShortenAdd 添加短链接
