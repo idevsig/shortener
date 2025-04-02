@@ -41,8 +41,8 @@ type ResErr struct {
 }
 
 // ResSuccess 成功响应
-type ResSuccess struct {
-	Data any     `json:"data"` // 数据
+type ResSuccess[T any] struct {
+	Data T       `json:"data"` // 数据
 	Meta ResPage `json:"meta"` // 元数据
 }
 

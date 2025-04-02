@@ -7,7 +7,7 @@
     - [x] 支持 PostgreSQL
     - [x] 支持 MySQL
 - [x] 添加 Redis 缓存
-- [ ] 制作 CLI 工具
+- [x] 制作 CLI 工具
 - [ ] 添加测试
 - [ ] 添加文档
     - [x] 添加 OpenAPI

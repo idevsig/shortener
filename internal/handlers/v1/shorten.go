@@ -48,12 +48,17 @@ func (t *ShortenHandler) ShortenRedirect(c *gin.Context) {
 // ShortenAdd 添加短链接
 func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 	var reqJson struct {
-		Code        string `json:"code"`
-		OriginalURL string `json:"original_url" binding:"required"`
-		Describe    string `json:"describe"`
+		Code        string `json:"code,omitempty"`
+		OriginalURL string `json:"original_url" binding:"required,url"`
+		Describe    string `json:"describe,omitempty"`
 	}
 
 	if err := c.ShouldBindJSON(&reqJson); err != nil {
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
+		return
+	}
+
+	if reqJson.OriginalURL != "" && !t.IsURL(reqJson.OriginalURL) {
 		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
@@ -114,10 +119,15 @@ func (t *ShortenHandler) ShortenUpdate(c *gin.Context) {
 	}
 
 	var reqJson struct {
-		OriginalURL string `json:"original_url" binding:"required"`
-		Describe    string `json:"describe"`
+		OriginalURL string `json:"original_url,omitempty" binding:"omitempty,url"`
+		Describe    string `json:"describe,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&reqJson); err != nil {
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
+		return
+	}
+
+	if reqJson.OriginalURL != "" && !t.IsURL(reqJson.OriginalURL) {
 		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
@@ -177,7 +187,7 @@ func (t *ShortenHandler) ShortenList(c *gin.Context) {
 		return
 	}
 
-	result := types.ResSuccess{
+	result := types.ResSuccess[[]types.ResShorten]{
 		Data: data,
 		Meta: pageInfo,
 	}
