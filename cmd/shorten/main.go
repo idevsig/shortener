@@ -28,45 +28,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"resty.dev/v3"
+
+	"go.dsig.cn/shortener/internal/types"
 )
 
 // Config 配置
 type Config struct {
 	APIURL string `mapstructure:"url"`
 	APIKEY string `mapstructure:"key"`
-}
-
-// ResShorten 短链接响应
-type ResShorten struct {
-	ID          int64  `json:"id"`
-	Code        string `json:"code"`
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
-	Describe    string `json:"describe"`
-	Status      int8   `json:"status"`
-	CreatedTime string `json:"created_time"`
-	UpdatedTime string `json:"updated_time"`
-}
-
-// ResPage 分页响应
-type ResPage struct {
-	Page         int64 `json:"page"`          // 当前页码（从1开始）
-	PageSize     int64 `json:"page_size"`     // 每页条数（可选返回，便于客户端验证）
-	CurrentCount int64 `json:"current_count"` // 当前页实际条数
-	TotalItems   int64 `json:"total_items"`   // 符合条件的总条数
-	TotalPages   int64 `json:"total_pages"`   // 总页数
-}
-
-// ResSuccess 成功响应
-type ResSuccess[T any] struct {
-	Data T       `json:"data"` // 数据
-	Meta ResPage `json:"meta"` // 元数据
-}
-
-// ResErr 错误响应
-type ResErr struct {
-	ErrCode int    `json:"errcode"`
-	ErrInfo string `json:"errinfo"`
 }
 
 const (
@@ -240,8 +209,8 @@ func newShortenCreateCmd() *cobra.Command {
 			client := resty.New()
 			defer client.Close()
 
-			var response ResShorten
-			var resErr ResErr
+			var response types.ResShorten
+			var resErr types.ResErr
 
 			res, err := client.R().
 				SetContentType("application/json").
@@ -296,7 +265,7 @@ func newShortenDeleteCmd() *cobra.Command {
 			client := resty.New()
 			defer client.Close()
 
-			var resErr ResErr
+			var resErr types.ResErr
 
 			res, err := client.R().
 				SetContentType("application/json").
@@ -349,8 +318,8 @@ func newShortenUpdateCmd() *cobra.Command {
 				Describe:    description,
 			}
 
-			var response ResShorten
-			var resErr ResErr
+			var response types.ResShorten
+			var resErr types.ResErr
 
 			client := resty.New()
 			defer client.Close()
@@ -408,8 +377,8 @@ func newShortenGetCmd() *cobra.Command {
 			client := resty.New()
 			defer client.Close()
 
-			var response ResShorten
-			var resErr ResErr
+			var response types.ResShorten
+			var resErr types.ResErr
 
 			res, err := client.R().
 				SetContentType("application/json").
@@ -456,9 +425,9 @@ func newShortenListCmd() *cobra.Command {
 			client := resty.New()
 			defer client.Close()
 
-			var allData []ResShorten
-			var response ResSuccess[[]ResShorten]
-			var resErr ResErr
+			var allData []types.ResShorten
+			var response types.ResSuccess[[]types.ResShorten]
+			var resErr types.ResErr
 
 			// 处理获取所有数据的逻辑
 			if isAll {

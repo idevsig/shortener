@@ -5,17 +5,20 @@ go 1.24.1
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/redis/go-redis/v9 v9.7.3
+	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 	modernc.org/sqlite v1.37.0
+	resty.dev/v3 v3.0.0-beta.2
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 )
 
 require (
