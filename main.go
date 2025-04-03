@@ -15,5 +15,7 @@ func main() {
 	}
 
 	r := routers.NewRouter()
-	r.Run(addr)
+	if err := r.Run(addr); err != nil {
+		panic("run server failed: " + err.Error())
+	}
 }

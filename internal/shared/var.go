@@ -1,16 +1,15 @@
 package shared
 
 import (
-	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
+	"go.dsig.cn/shortener/internal/cache"
 	"go.dsig.cn/shortener/internal/types"
 )
 
 var (
-	GlobalShorten     *types.CfgShorten
-	GlobalDB          *gorm.DB
-	GlobalCache       *redis.Client
-	GlobalCacheConfig *types.CfgCache
-	GlobalAPIKey      string
+	GlobalShorten *types.CfgShorten
+	GlobalDB      *gorm.DB
+	GlobalAPIKey  string
+	GlobalCache   *cache.CacheManager
 )

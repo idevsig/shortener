@@ -8,7 +8,6 @@ import (
 
 // GenerateCode 生成短码(6位)
 func GenerateCode() string {
-	randSeed()
 	length := shared.GlobalShorten.Length
 	charset := shared.GlobalShorten.Charset
 

@@ -54,6 +54,25 @@ type CfgShorten struct {
 
 // CfgCache 缓存配置
 type CfgCache struct {
-	Expire int    `json:"expire"`
-	Prefix string `json:"prefix"`
+	Enabled bool   `json:"enabled"`
+	Type    string `json:"type"`
+	Expire  int    `json:"expire"`
+	Prefix  string `json:"prefix"`
+}
+
+// CfgCacheRedis 缓存配置
+type CfgCacheRedis struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
+}
+
+// CfgCacheValkey 缓存配置
+type CfgCacheValkey struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
 }

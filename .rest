@@ -84,7 +84,7 @@ GET http://{{host}}/api/v1/shortens/{{code}}{{$randomInt 5 100}}
 
 ### 获取短网址详情
 
-GET http://{{host}}/api/v1/shortens/{{code}}
+GET http://{{host}}/api/v1/shortens/{{code}}963
 
 ### 获取短网址列表（随机）
 

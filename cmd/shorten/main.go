@@ -80,8 +80,8 @@ func init() {
 	rootCmd.PersistentFlags().StringP("url", "u", "", "API URL")
 	rootCmd.PersistentFlags().StringP("key", "k", "", "API KEY")
 
-	viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
-	viper.BindPFlag("key", rootCmd.PersistentFlags().Lookup("key"))
+	_ = viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
+	_ = viper.BindPFlag("key", rootCmd.PersistentFlags().Lookup("key"))
 
 	rootCmd.AddCommand(newInitCmd())
 	rootCmd.AddCommand(newEnvCmd())

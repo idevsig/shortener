@@ -8,7 +8,6 @@ import (
 	"github.com/bytedance/sonic"
 	"gorm.io/gorm"
 
-	"go.dsig.cn/shortener/internal/cache"
 	"go.dsig.cn/shortener/internal/dal/db/model"
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/types"
@@ -57,7 +56,9 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 	}
 
 	// 3. 缓存短链接
-	cache.Set(cache.GetKey(newURL.ShortCode), newURL)
+	if err := t.cache.Set(t.cache.GetKey(newURL.ShortCode), newURL); err != nil && !errors.Is(err, ecodes.ErrCacheDisabled) {
+		return ecodes.ErrCodeCacheError, result // 缓存失败
+	}
 
 	// 4. 构造返回结果
 	result = types.ResShorten{
@@ -83,7 +84,9 @@ func (t *ShortenLogic) ShortenDelete(code string) int {
 	}
 
 	// 删除缓存
-	cache.Delete(cache.GetKey(code))
+	if err := t.cache.Delete(t.cache.GetKey(code)); err != nil && !errors.Is(err, ecodes.ErrCacheDisabled) {
+		return ecodes.ErrCodeCacheError // 缓存删除失败
+	}
 
 	return ecodes.ErrCodeSuccess
 }
@@ -115,7 +118,9 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 		return ecodes.ErrCodeDatabaseError, result
 	}
 
-	cache.Set(cache.GetKey(existingURL.ShortCode), existingURL)
+	if err := t.cache.Set(t.cache.GetKey(existingURL.ShortCode), existingURL); err != nil && !errors.Is(err, ecodes.ErrCacheDisabled) {
+		return ecodes.ErrCodeCacheError, result // 缓存失败
+	}
 
 	result = types.ResShorten{
 		ID:          existingURL.ID,
@@ -136,10 +141,12 @@ func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 	var data model.Urls
 
 	// 1. 从缓存中获取
-	cacheKey := cache.GetKey(code)
-	if cacheData, err := cache.Get(cacheKey); err == nil {
+	cacheKey := t.cache.GetKey(code)
+	if cacheData, err := t.cache.Get(cacheKey); err == nil {
 		// log.Printf("cacheData: %v", cacheData)
-		sonic.Unmarshal([]byte(cacheData), &data)
+		if err := sonic.Unmarshal([]byte(cacheData), &data); err != nil {
+			return ecodes.ErrCodeCacheError, types.ResShorten{} // 缓存反序列化失败
+		}
 	} else {
 		// 从数据库中获取
 		if err := t.db.Where("short_code = ?", code).First(&data).Error; err != nil {
@@ -151,7 +158,9 @@ func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 
 		// log.Printf("data: %v", data)
 		// 缓存短链接
-		cache.Set(cacheKey, data)
+		if err := t.cache.Set(cacheKey, data); err != nil && !errors.Is(err, ecodes.ErrCacheDisabled) {
+			return ecodes.ErrCodeCacheError, types.ResShorten{} // 缓存失败
+		}
 	}
 
 	result := types.ResShorten{

@@ -148,7 +148,7 @@ func migrate() {
 		panic("failed to migrate database: " + err.Error())
 	}
 
-	shared.GlobalDB.Migrator().CurrentDatabase()              // 查看数据库类型
-	shared.GlobalDB.Migrator().GetTables()                    // 查看所有表
-	shared.GlobalDB.Migrator().HasColumn(&model.Urls{}, "id") // 检查字段
+	// shared.GlobalDB.Migrator().CurrentDatabase()              // 查看数据库类型
+	// shared.GlobalDB.Migrator().GetTables()                    // 查看所有表
+	// shared.GlobalDB.Migrator().HasColumn(&model.Urls{}, "id") // 检查字段
 }

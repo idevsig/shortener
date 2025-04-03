@@ -1,10 +1,9 @@
 package bootstrap
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/bytedance/sonic"
-	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 
 	"go.dsig.cn/shortener/internal/cache"
@@ -13,57 +12,69 @@ import (
 	"go.dsig.cn/shortener/internal/types"
 )
 
+var cacheCfg *types.CfgCache
+
 // initCache 初始化缓存
 func initCache() {
-	cacheType := viper.GetString("cache.type")
-	if cacheType == "" {
-		cacheType = "redis"
+	if err := viper.UnmarshalKey("cache", &cacheCfg); err != nil {
+		panic("cache config unmarshal failed: " + err.Error())
 	}
 
-	switch cacheType {
-	case "redis":
-		shared.GlobalCache = redisCache()
-	default:
-		panic("cache type not support: " + cacheType)
+	var cacheClient cache.Cache
+
+	if cacheCfg.Type == "" {
+		cacheCfg.Enabled = false
 	}
 
-	initCacheConfig()
+	if cacheCfg.Enabled {
+		switch cacheCfg.Type {
+		case "redis":
+			cacheClient = redisCache()
+		case "valkey":
+			cacheClient = valkeyCache()
+		default:
+			log.Printf("cache type not support: %s", cacheCfg.Type)
+			cacheCfg.Enabled = false
+		}
+	}
+
+	// log.Printf("cache client: %+v cacheCfg: %+v", cacheClient, cacheCfg)
+	shared.GlobalCache = cache.NewCacheManager(cacheCfg.Enabled, cacheClient, cacheCfg.Prefix)
+	if !shared.GlobalCache.Enabled {
+		return
+	}
+
+	if err := shared.GlobalCache.Ping(); err != nil {
+		panic("cache ping failed: " + err.Error())
+	}
+
 	loadAllShorten()
 }
 
-// initCacheConfig 初始化缓存配置
-func initCacheConfig() {
-	shared.GlobalCacheConfig = &types.CfgCache{
-		Expire: viper.GetInt("cache.expire"),
-		Prefix: viper.GetString("cache.prefix"),
+// redisCache 初始化 redis
+func redisCache() *cache.RedisCache {
+	var redisCfg types.CfgCacheRedis
+	if err := viper.UnmarshalKey("cache.redis", &redisCfg); err != nil {
+		panic("cache redis config unmarshal failed: " + err.Error())
 	}
+	cacheClient, err := cache.NewRedisCache(cacheCfg, &redisCfg)
+	if err != nil {
+		panic("cache redis init failed: " + err.Error())
+	}
+	return cacheClient
 }
 
-// redisCache 初始化 redis
-func redisCache() *redis.Client {
-	host := viper.GetString("cache.redis.host")
-	if host == "" {
-		host = "localhost"
+// valkeyCache 初始化 valkey
+func valkeyCache() *cache.ValkeyCache {
+	var valkeyCfg types.CfgCacheValkey
+	if err := viper.UnmarshalKey("cache.valkey", &valkeyCfg); err != nil {
+		panic("cache valkey config unmarshal failed: " + err.Error())
 	}
-	port := viper.GetInt("cache.redis.port")
-	if port == 0 {
-		port = 6379
+	cacheClient, err := cache.NewValkeyCache(cacheCfg, &valkeyCfg)
+	if err != nil {
+		panic("cache valkey init failed: " + err.Error())
 	}
-	addr := fmt.Sprintf("%s:%d", host, port)
-	password := viper.GetString("cache.redis.password")
-	db := viper.GetInt("cache.redis.db")
-	if db == 0 {
-		db = 0
-	}
-
-	// 创建 redis 客户端
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
-		DB:       db,
-	})
-
-	return redisClient
+	return cacheClient
 }
 
 // loadAllShorten 加载所有短链接
@@ -73,13 +84,17 @@ func loadAllShorten() {
 		panic("load all shorten failed: " + err.Error())
 	}
 
-	cache.ClearPrefix(cache.GetKey(""))
+	if err := shared.GlobalCache.ClearPrefix(shared.GlobalCache.GetKey("")); err != nil {
+		panic("cache clear prefix failed: " + err.Error())
+	}
 
 	items := make(map[string]string, len(shortens))
 	for _, shorten := range shortens {
 		item, _ := sonic.Marshal(shorten)
-		items[cache.GetKey(shorten.ShortCode)] = string(item)
+		items[shared.GlobalCache.GetKey(shorten.ShortCode)] = string(item)
 	}
 
-	cache.BatchSet(items)
+	if err := shared.GlobalCache.BatchSet(items); err != nil {
+		panic("cache batch set failed: " + err.Error())
+	}
 }

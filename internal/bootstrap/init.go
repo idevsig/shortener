@@ -28,68 +28,18 @@ func init() {
 			// 创建并保存默认配置
 			configFile := filepath.Join(configName + "." + configType)
 			if err := viper.SafeWriteConfigAs(configFile); err != nil {
-				panic(fmt.Errorf("write config failed: %s\n%v\n", configFile, err))
+				panic(fmt.Errorf("write config failed: %s\n%v", configFile, err))
 			}
 		} else {
 			// 其他类型的配置错误
-			panic(fmt.Errorf("fatal error config file: %w", err))
+			panic(
+				fmt.Errorf("fatal error config file: %w", err),
+			)
 		}
 	}
 
 	// log.Printf("config: %+v\n", viper.AllSettings())
 	bootstrap()
-}
-
-func initDefaultConfig() {
-	// 服务器配置
-	viper.SetDefault("server.address", ":8080")
-	viper.SetDefault("server.trusted-platform", "")
-	viper.SetDefault("server.site_url", "http://localhost:8080")
-
-	// API配置
-	viper.SetDefault("api.url", "")
-	viper.SetDefault("api.key", "")
-
-	// 短链生成配置
-	viper.SetDefault("shortener.code_length", 6)
-	viper.SetDefault("shortener.code_charset", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-	// 数据库配置
-	viper.SetDefault("database.type", "sqlite")
-	viper.SetDefault("database.log_level", 0)
-
-	// SQLite配置
-	viper.SetDefault("database.sqlite.path", "data/shortener.db")
-
-	// PostgreSQL配置
-	viper.SetDefault("database.postgres.host", "localhost")
-	viper.SetDefault("database.postgres.port", 5432)
-	viper.SetDefault("database.postgres.user", "postgres")
-	viper.SetDefault("database.postgres.password", "postgres")
-	viper.SetDefault("database.postgres.database", "shortener")
-	viper.SetDefault("database.postgres.sslmode", "disable")
-	viper.SetDefault("database.postgres.timezone", "Asia/Shanghai")
-
-	// MySQL配置
-	viper.SetDefault("database.mysql.host", "localhost")
-	viper.SetDefault("database.mysql.port", 3306)
-	viper.SetDefault("database.mysql.user", "root")
-	viper.SetDefault("database.mysql.password", "root")
-	viper.SetDefault("database.mysql.database", "shortener")
-	viper.SetDefault("database.mysql.charset", "utf8mb4")
-	viper.SetDefault("database.mysql.parse_time", true)
-	viper.SetDefault("database.mysql.loc", "Local")
-
-	// 缓存配置
-	viper.SetDefault("cache.type", "redis")
-	viper.SetDefault("cache.expire", 3600)
-	viper.SetDefault("cache.prefix", "shorten:")
-
-	// Redis配置
-	viper.SetDefault("cache.redis.host", "localhost")
-	viper.SetDefault("cache.redis.port", 6379)
-	viper.SetDefault("cache.redis.password", "")
-	viper.SetDefault("cache.redis.db", 0)
 }
 
 // 初始化

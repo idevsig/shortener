@@ -92,6 +92,10 @@ fmt:
 	gofumpt -w ./
 	goimports -w  -local go.dsig.cn/shortener ./
 
+# 检查代码
+lint:
+    golangci-lint run --fix ./
+
 # 整理与更新依赖
 go-mod-tidy:
     #!/bin/bash

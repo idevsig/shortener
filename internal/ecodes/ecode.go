@@ -14,6 +14,7 @@ var errCodeMessages = map[int]string{
 	ErrCodeSystemInternalError: "系统内部错误",
 	ErrCodeDatabaseError:       "数据库错误",
 	ErrCodeCacheError:          "缓存错误",
+	ErrCodeCacheDisabled:       "缓存未启用",
 	ErrCodeFileIOError:         "文件/IO操作错误",
 	ErrCodeNetworkError:        "网络通信错误",
 

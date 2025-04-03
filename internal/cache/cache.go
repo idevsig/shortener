@@ -1,88 +1,85 @@
 package cache
 
 import (
-	"context"
 	"time"
 
-	"github.com/bytedance/sonic"
-
-	"go.dsig.cn/shortener/internal/shared"
+	"go.dsig.cn/shortener/internal/ecodes"
 )
 
-// GetKey 获取缓存key
-func GetKey(key string) string {
-	return shared.GlobalCacheConfig.Prefix + key
+// Cache 缓存
+type Cache interface {
+	Ping() error
+	Set(key string, value any, ttl ...time.Duration) error
+	Get(key string) (string, error)
+	Delete(key string) error
+	ClearPrefix(prefix string) error
+	BatchSet(values map[string]string, ttl ...time.Duration) error
 }
 
-// Set 设置缓存
-func Set(key string, value any, ttl ...time.Duration) error {
-	jsonBytes, err := sonic.Marshal(value)
-	if err != nil {
-		return err
-	}
+// CacheManager 缓存管理器
+type CacheManager struct {
+	Enabled bool
+	Cache   Cache
+	Prefix  string
+}
 
-	expire := 0
-	if len(ttl) > 0 {
-		expire = int(ttl[0])
-	}
-	return shared.GlobalCache.Set(context.Background(), key, string(jsonBytes), time.Duration(expire)*time.Second).Err()
+// NewCacheManager 创建缓存管理器
+func NewCacheManager(enabled bool, cache Cache, prefix string) *CacheManager {
+	return &CacheManager{Enabled: enabled, Cache: cache, Prefix: prefix}
 }
 
 // Get 获取缓存
-func Get(key string) (string, error) {
-	data, err := shared.GlobalCache.Get(context.Background(), key).Result()
-	if err != nil {
-		return "", err
+func (c *CacheManager) Get(key string) (string, error) {
+	if !c.Enabled {
+		return "", ecodes.ErrCacheDisabled
 	}
-	return data, nil
+	return c.Cache.Get(key)
+}
+
+// Set 设置缓存
+func (c *CacheManager) Set(key string, value any, ttl ...time.Duration) error {
+	if !c.Enabled {
+		return ecodes.ErrCacheDisabled
+	}
+	return c.Cache.Set(key, value, ttl...)
 }
 
 // Delete 删除缓存
-func Delete(key string) error {
-	return shared.GlobalCache.Del(context.Background(), key).Err()
+func (c *CacheManager) Delete(key string) error {
+	if !c.Enabled {
+		return ecodes.ErrCacheDisabled
+	}
+	return c.Cache.Delete(key)
 }
 
 // ClearPrefix 清理缓存前缀
-func ClearPrefix(prefix string) error {
-	ctx := context.Background()
-	iter := shared.GlobalCache.Scan(ctx, 0, prefix+"*", 0).Iterator()
-
-	var keys []string
-	for iter.Next(ctx) {
-		keys = append(keys, iter.Val())
+func (c *CacheManager) ClearPrefix(prefix string) error {
+	if !c.Enabled {
+		return ecodes.ErrCacheDisabled
 	}
-
-	if err := iter.Err(); err != nil {
-		return err
-	}
-
-	if len(keys) > 0 {
-		if err := shared.GlobalCache.Del(ctx, keys...).Err(); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return c.Cache.ClearPrefix(prefix)
 }
 
-// 批量设置缓存
-func BatchSet(values map[string]string, ttl ...time.Duration) error {
-	ctx := context.Background()
-	pipe := shared.GlobalCache.Pipeline()
-
-	expire := 0
-	if len(ttl) > 0 {
-		expire = int(ttl[0])
+// BatchSet 批量设置缓存
+func (c *CacheManager) BatchSet(values map[string]string, ttl ...time.Duration) error {
+	if !c.Enabled {
+		return ecodes.ErrCacheDisabled
 	}
+	return c.Cache.BatchSet(values, ttl...)
+}
 
-	for key, value := range values {
-		// log.Printf("value: %v", value)
-		pipe.Set(ctx, key, value, time.Duration(expire)*time.Second)
+// Ping 检查缓存连接
+func (c *CacheManager) Ping() error {
+	if !c.Enabled {
+		return ecodes.ErrCacheDisabled
 	}
+	return c.Cache.Ping()
+}
 
-	if _, err := pipe.Exec(ctx); err != nil {
-		return err
+// GetKey 获取缓存key
+func (c *CacheManager) GetKey(key string) string {
+	if !c.Enabled {
+		return ""
 	}
-
-	return nil
+	return c.Prefix + key
 }
