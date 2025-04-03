@@ -414,10 +414,10 @@ func newShortenGetCmd() *cobra.Command {
 				return fmt.Errorf("invalid short code: %s", code)
 			}
 
-			fmt.Printf("Short Code: %s\n", response.Code)
-			fmt.Printf("         Short URL: %s\n", response.ShortURL)
-			fmt.Printf("      Original URL: %s\n", response.OriginalURL)
-			fmt.Printf("       Description: %s\n", response.Describe)
+			fmt.Printf("  Short Code: %s\n", response.Code)
+			fmt.Printf("   Short URL: %s\n", response.ShortURL)
+			fmt.Printf("Original URL: %s\n", response.OriginalURL)
+			fmt.Printf(" Description: %s\n", response.Describe)
 			return nil
 		},
 	}

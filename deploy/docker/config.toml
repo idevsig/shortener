@@ -2,10 +2,7 @@
 address = ":8080"
 trusted-platform = ""
 site_url = "http://localhost:8080"
-
-[api]
-url = ""
-key = ""
+api_key = ""
 
 [shortener]
 code_length = 6
@@ -55,3 +52,10 @@ port = 6379
 username = ""
 password = ""
 db = 0
+
+[geoip]
+enabled = false
+type = "ip2region"
+
+[geoip.ip2region]
+path = "data/ip2region.xdb"

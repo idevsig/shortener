@@ -52,4 +52,7 @@ func bootstrap() {
 
 	// init cache
 	initCache()
+
+	// init geoip
+	initGeoIP()
 }

@@ -26,7 +26,7 @@ func initSharedConfig() {
 		Charset: charset,
 	}
 
-	shared.GlobalAPIKey = viper.GetString("api.key")
+	shared.GlobalAPIKey = viper.GetString("server.api_key")
 }
 
 // initDefaultConfig 初始化默认配置
@@ -35,10 +35,7 @@ func initDefaultConfig() {
 	viper.SetDefault("server.address", ":8080")
 	viper.SetDefault("server.trusted-platform", "")
 	viper.SetDefault("server.site_url", "http://localhost:8080")
-
-	// API配置
-	viper.SetDefault("api.url", "")
-	viper.SetDefault("api.key", "")
+	viper.SetDefault("server.api_key", "")
 
 	// 短链生成配置
 	viper.SetDefault("shortener.code_length", 6)
@@ -88,4 +85,10 @@ func initDefaultConfig() {
 	viper.SetDefault("cache.valkey.username", "")
 	viper.SetDefault("cache.valkey.password", "")
 	viper.SetDefault("cache.valkey.db", 0)
+
+	// GeoIP配置
+	viper.SetDefault("geoip.enabled", false)
+	viper.SetDefault("geoip.type", "ip2region")
+	viper.SetDefault("geoip.ip2region.path", "data/ip2region.xdb")
+	viper.SetDefault("geoip.ip2region.mode", "vector")
 }

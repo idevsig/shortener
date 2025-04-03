@@ -94,7 +94,7 @@ fmt:
 
 # 检查代码
 lint:
-    golangci-lint run --fix ./
+    golangci-lint run
 
 # 整理与更新依赖
 go-mod-tidy:

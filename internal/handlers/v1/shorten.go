@@ -7,8 +7,8 @@ import (
 
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/logics"
-	"go.dsig.cn/shortener/internal/pkg"
 	"go.dsig.cn/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 // ShortenHandler 短链接处理器
@@ -43,6 +43,20 @@ func (t *ShortenHandler) ShortenRedirect(c *gin.Context) {
 		return
 	}
 
+	// 异步记录访问历史
+	record := logics.NewHistoryLogic()
+	go func() {
+		_ = record.HistoryAdd(
+			types.HistoryParams{
+				URLID:     data.ID,
+				ShortCode: data.Code,
+				IPAddress: c.ClientIP(),
+				UserAgent: c.Request.UserAgent(),
+				Referer:   c.Request.Referer(),
+			},
+		)
+	}()
+
 	c.Redirect(http.StatusFound, data.OriginalURL)
 }
 
@@ -66,7 +80,7 @@ func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 
 	// 生成短码
 	if reqJson.Code == "" {
-		reqJson.Code = pkg.GenerateCode()
+		reqJson.Code = utils.GenerateCode()
 	}
 
 	if len(reqJson.Code) > 16 {

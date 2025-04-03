@@ -1,8 +1,6 @@
 package bootstrap
 
 import (
-	"log"
-
 	"github.com/bytedance/sonic"
 	"github.com/spf13/viper"
 
@@ -21,11 +19,6 @@ func initCache() {
 	}
 
 	var cacheClient cache.Cache
-
-	if cacheCfg.Type == "" {
-		cacheCfg.Enabled = false
-	}
-
 	if cacheCfg.Enabled {
 		switch cacheCfg.Type {
 		case "redis":
@@ -33,17 +26,15 @@ func initCache() {
 		case "valkey":
 			cacheClient = valkeyCache()
 		default:
-			log.Printf("cache type not support: %s", cacheCfg.Type)
 			cacheCfg.Enabled = false
 		}
 	}
 
 	// log.Printf("cache client: %+v cacheCfg: %+v", cacheClient, cacheCfg)
 	shared.GlobalCache = cache.NewCacheManager(cacheCfg.Enabled, cacheClient, cacheCfg.Prefix)
-	if !shared.GlobalCache.Enabled {
+	if !cacheCfg.Enabled {
 		return
 	}
-
 	if err := shared.GlobalCache.Ping(); err != nil {
 		panic("cache ping failed: " + err.Error())
 	}
@@ -79,7 +70,7 @@ func valkeyCache() *cache.ValkeyCache {
 
 // loadAllShorten 加载所有短链接
 func loadAllShorten() {
-	var shortens []model.Urls
+	var shortens []model.Url
 	if err := shared.GlobalDB.Find(&shortens).Error; err != nil {
 		panic("load all shorten failed: " + err.Error())
 	}

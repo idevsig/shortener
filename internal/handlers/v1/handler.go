@@ -2,8 +2,8 @@ package v1
 
 import (
 	"go.dsig.cn/shortener/internal/ecodes"
-	"go.dsig.cn/shortener/internal/pkg"
 	"go.dsig.cn/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 type handler struct{}
@@ -18,5 +18,5 @@ func (t *handler) JsonRespErr(errCode int) types.ResErr {
 
 // IsURL 判断是否为URL
 func (t *handler) IsURL(url string) bool {
-	return pkg.IsURL(url)
+	return utils.IsURL(url)
 }

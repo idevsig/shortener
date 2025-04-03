@@ -13,8 +13,8 @@ import (
 	_ "modernc.org/sqlite"
 
 	"go.dsig.cn/shortener/internal/dal/db/model"
-	"go.dsig.cn/shortener/internal/pkg"
 	"go.dsig.cn/shortener/internal/shared"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 // initDB 初始化数据库
@@ -61,7 +61,7 @@ func connectSqlite() gorm.Dialector {
 		panic("database.sqlite.path is empty")
 	}
 	// 如果目录不存在，则创建目录
-	if err := pkg.MkdirIfNotExist(dsn); err != nil {
+	if err := utils.MkdirIfNotExist(dsn); err != nil {
 		panic("failed to create database file: " + err.Error())
 	}
 
@@ -143,7 +143,7 @@ func connectMysql() gorm.Dialector {
 // migrate 数据库迁移 schema
 func migrate() {
 	// log.Println("migrate")
-	err := shared.GlobalDB.AutoMigrate(&model.Urls{})
+	err := shared.GlobalDB.AutoMigrate(&model.Url{}, &model.History{})
 	if err != nil {
 		panic("failed to migrate database: " + err.Error())
 	}

@@ -11,6 +11,7 @@ import (
 	"go.dsig.cn/shortener/internal/dal/db/model"
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 // ShortenLogic 短链接逻辑层
@@ -28,7 +29,7 @@ func NewShortenLogic() *ShortenLogic {
 // ShortenAdd 添加短链接
 func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe string) (int, types.ResShorten) {
 	result := types.ResShorten{}
-	existingURL := model.Urls{}
+	existingURL := model.Url{}
 
 	// 1. 检查短码是否已存在（使用 GORM 的 Find 直接判断）
 	if err := t.db.Where("short_code = ?", code).First(&existingURL).Error; err != nil {
@@ -41,8 +42,8 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 	}
 
 	// 2. 创建新记录
-	nowTime := time.Now().Unix()
-	newURL := model.Urls{
+	nowTime := time.Now().Local()
+	newURL := model.Url{
 		ShortCode:   code,
 		OriginalURL: originalURL,
 		Describe:    describe,
@@ -68,8 +69,8 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 		OriginalURL: newURL.OriginalURL,
 		Describe:    newURL.Describe,
 		Status:      newURL.Status,
-		CreatedTime: t.GetTimeFormat(nowTime),
-		UpdatedTime: t.GetTimeFormat(nowTime),
+		CreatedTime: utils.TimeToStr(nowTime),
+		UpdatedTime: utils.TimeToStr(nowTime),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -77,7 +78,7 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 
 // ShortenDelete 删除短链接
 func (t *ShortenLogic) ShortenDelete(code string) int {
-	if res := t.db.Where("short_code = ?", code).Delete(&model.Urls{}); res.Error != nil {
+	if res := t.db.Where("short_code = ?", code).Delete(&model.Url{}); res.Error != nil {
 		return ecodes.ErrCodeDatabaseError
 	} else if res.RowsAffected == 0 {
 		return ecodes.ErrCodeNotFound
@@ -95,7 +96,7 @@ func (t *ShortenLogic) ShortenDelete(code string) int {
 func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe string) (int, types.ResShorten) {
 	result := types.ResShorten{}
 
-	var existingURL model.Urls
+	var existingURL model.Url
 	if err := t.db.Where("short_code = ?", code).First(&existingURL).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ecodes.ErrCodeNotFound, result
@@ -114,6 +115,9 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 		updates["describe"] = describe
 	}
 
+	nowTime := time.Now().Local()
+	updates["updated_at"] = nowTime
+
 	if err := t.db.Model(&existingURL).Updates(updates).Error; err != nil {
 		return ecodes.ErrCodeDatabaseError, result
 	}
@@ -129,8 +133,8 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 		OriginalURL: existingURL.OriginalURL,
 		Describe:    existingURL.Describe,
 		Status:      existingURL.Status,
-		CreatedTime: t.GetTimeFormat(existingURL.CreatedAt),
-		UpdatedTime: t.GetTimeFormat(existingURL.UpdatedAt),
+		UpdatedTime: utils.TimeToStr(nowTime),
+		CreatedTime: utils.TimeToStr(existingURL.CreatedAt),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -138,7 +142,7 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 
 // ShortenFind 获取短链接
 func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
-	var data model.Urls
+	var data model.Url
 
 	// 1. 从缓存中获取
 	cacheKey := t.cache.GetKey(code)
@@ -170,9 +174,8 @@ func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 		OriginalURL: data.OriginalURL,
 		Describe:    data.Describe,
 		Status:      data.Status,
-		CreatedTime: t.GetTimeFormat(data.CreatedAt),
-
-		UpdatedTime: t.GetTimeFormat(data.UpdatedAt),
+		CreatedTime: utils.TimeToStr(data.CreatedAt),
+		UpdatedTime: utils.TimeToStr(data.UpdatedAt),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -184,7 +187,7 @@ func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQuery) (int, []types.ResShor
 	pageInfo := types.ResPage{}
 
 	// 查询数据库
-	query := t.db.Model(&model.Urls{}).
+	query := t.db.Model(&model.Url{}).
 		Order(fmt.Sprintf("%s %s", reqQuery.SortBy, reqQuery.Order))
 
 	// 计算总条数
@@ -195,7 +198,7 @@ func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQuery) (int, []types.ResShor
 	}
 
 	// 分页查询
-	data := make([]model.Urls, 0)
+	data := make([]model.Url, 0)
 	resDB := query.Offset(int((reqQuery.Page - 1) * reqQuery.PageSize)).
 		Limit(int(reqQuery.PageSize)).
 		Find(&data)
@@ -221,8 +224,8 @@ func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQuery) (int, []types.ResShor
 			OriginalURL: item.OriginalURL,
 			Describe:    item.Describe,
 			Status:      item.Status,
-			CreatedTime: t.GetTimeFormat(item.CreatedAt),
-			UpdatedTime: t.GetTimeFormat(item.UpdatedAt),
+			CreatedTime: utils.TimeToStr(item.CreatedAt),
+			UpdatedTime: utils.TimeToStr(item.UpdatedAt),
 		})
 	}
 

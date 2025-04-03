@@ -1,8 +1,6 @@
 package logics
 
 import (
-	"time"
-
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 
@@ -30,9 +28,4 @@ func (t *logic) init() {
 // GetSiteURL 获取短链接的完整URL
 func (t *logic) GetSiteURL(code string) string {
 	return t.site_url + "/" + code
-}
-
-// GetTimeFormat 获取时间格式
-func (t *logic) GetTimeFormat(timestamp int64) string {
-	return time.Unix(timestamp, 0).Format("2006-01-02 15:04:05")
 }
