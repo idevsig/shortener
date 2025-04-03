@@ -6,6 +6,7 @@
 @contentType = application/json
 
 @code = shortener
+@apiKey = 1234567890
 
 ### PING
 
@@ -25,6 +26,19 @@ Content-Type: {{contentType}}
   "code": "{{code}}{{$randomInt 5 100}}",
   "describe": "短网址"
 }
+
+### 添加短网址（随机 + KEY）
+
+POST http://{{host}}/api/v1/shortens
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
+
+{
+  "original_url": "https://go.dsig.cn/shortener",
+  "code": "{{code}}{{$randomInt 5 100}}",
+  "describe": "短网址"
+}
+
 
 ### 添加短网址
 POST http://{{host}}/api/v1/shortens

@@ -2,19 +2,19 @@ package bootstrap
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/viper"
-	"go.dsig.cn/shortener/internal/dal/db/model"
-	"go.dsig.cn/shortener/internal/pkg"
-	"go.dsig.cn/shortener/internal/shared"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 	_ "modernc.org/sqlite"
+
+	"go.dsig.cn/shortener/internal/dal/db/model"
+	"go.dsig.cn/shortener/internal/pkg"
+	"go.dsig.cn/shortener/internal/shared"
 )
 
 // initDB 初始化数据库
@@ -56,7 +56,7 @@ func initDB() {
 // connectSqlite 连接 sqlite
 func connectSqlite() gorm.Dialector {
 	dsn := viper.GetString("database.sqlite.path")
-	log.Printf("database.sqlite: %s\n", dsn)
+	// log.Printf("database.sqlite: %s\n", dsn)
 	if dsn == "" {
 		panic("database.sqlite.path is empty")
 	}
@@ -102,7 +102,7 @@ func connectPostgres() gorm.Dialector {
 		sslmode,
 		loc,
 	)
-	log.Printf("database.postgres: %s\n", dsn)
+	// log.Printf("database.postgres: %s\n", dsn)
 	return postgres.Open(dsn)
 }
 
@@ -135,14 +135,14 @@ func connectMysql() gorm.Dialector {
 		parseTime,
 		loc,
 	)
-	log.Printf("database.mysql: %s\n", dsn)
+	// log.Printf("database.mysql: %s\n", dsn)
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
 	return mysql.Open(dsn)
 }
 
 // migrate 数据库迁移 schema
 func migrate() {
-	log.Println("migrate")
+	// log.Println("migrate")
 	err := shared.GlobalDB.AutoMigrate(&model.Urls{})
 	if err != nil {
 		panic("failed to migrate database: " + err.Error())

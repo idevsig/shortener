@@ -17,7 +17,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -85,6 +84,7 @@ func init() {
 	viper.BindPFlag("key", rootCmd.PersistentFlags().Lookup("key"))
 
 	rootCmd.AddCommand(newInitCmd())
+	rootCmd.AddCommand(newEnvCmd())
 	rootCmd.AddCommand(newShortenCreateCmd())
 	rootCmd.AddCommand(newShortenDeleteCmd())
 	rootCmd.AddCommand(newShortenUpdateCmd())
@@ -99,7 +99,7 @@ func initConfig() error {
 	}
 
 	configDir = filepath.Join(userConfigDir, cfgDirName)
-	log.Printf("configDir: %s", configDir)
+	// log.Printf("configDir: %s", configDir)
 
 	viper.SetConfigName(configName)
 	viper.AddConfigPath(configDir)
@@ -118,7 +118,7 @@ func initConfig() error {
 	APIRequestURL = cfg.APIURL + APIRequestURL
 	APIShortenURL = APIRequestURL + APIShortenURL
 
-	log.Printf("cfg: %+v", cfg)
+	// log.Printf("cfg: %+v", cfg)
 	return nil
 }
 
@@ -151,7 +151,7 @@ func newInitCmd() *cobra.Command {
 		Use:   "init",
 		Short: "Initialize configuration",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := os.MkdirAll(configDir, 0700); err != nil {
+			if err := os.MkdirAll(configDir, 0o700); err != nil {
 				fmt.Printf("Create config directory failed: %s\n%v\n", configDir, err)
 				return
 			}
@@ -171,6 +171,19 @@ func newInitCmd() *cobra.Command {
 				fmt.Printf("Write config failed: %s\n%v\n", configFile, err)
 				return
 			}
+		},
+	}
+}
+
+func newEnvCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "env",
+		Aliases: []string{"e"},
+		Short:   "Print environment variables",
+		Example: `  shorten env`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("SHORTENER_URL: %s\n", viper.GetString("url"))
+			fmt.Printf("SHORTENER_KEY: %s\n", viper.GetString("key"))
 		},
 	}
 }
@@ -213,14 +226,14 @@ func newShortenCreateCmd() *cobra.Command {
 			var resErr types.ResErr
 
 			res, err := client.R().
+				SetHeader("X-API-KEY", cfg.APIKEY).
 				SetContentType("application/json").
 				SetBody(req).
 				SetResult(&response).
 				SetError(&resErr).
 				Post(APIShortenURL)
-
 			if err != nil {
-				return fmt.Errorf("failed to create short URL: %w", err)
+				return fmt.Errorf("failed to create short URL: \n  %w", err)
 			}
 
 			if res.StatusCode() != http.StatusCreated {
@@ -268,12 +281,12 @@ func newShortenDeleteCmd() *cobra.Command {
 			var resErr types.ResErr
 
 			res, err := client.R().
+				SetHeader("X-API-KEY", cfg.APIKEY).
 				SetContentType("application/json").
 				SetError(&resErr).
 				Delete(APIShortenURL + "/" + code)
-
 			if err != nil {
-				return fmt.Errorf("failed to delete short URL: %w", err)
+				return fmt.Errorf("failed to delete short URL: \n  %w", err)
 			}
 
 			if res.StatusCode() != 204 {
@@ -325,14 +338,14 @@ func newShortenUpdateCmd() *cobra.Command {
 			defer client.Close()
 
 			res, err := client.R().
+				SetHeader("X-API-KEY", cfg.APIKEY).
 				SetContentType("application/json").
 				SetBody(req).
 				SetResult(&response).
 				SetError(&resErr).
 				Put(APIShortenURL + "/" + code)
-
 			if err != nil {
-				return fmt.Errorf("failed to update short code: %w", err)
+				return fmt.Errorf("failed to update short code: \n  %w", err)
 			}
 
 			if res.StatusCode() != http.StatusOK {
@@ -381,13 +394,13 @@ func newShortenGetCmd() *cobra.Command {
 			var resErr types.ResErr
 
 			res, err := client.R().
+				SetHeader("X-API-KEY", cfg.APIKEY).
 				SetContentType("application/json").
 				SetResult(&response).
 				SetError(&resErr).
 				Get(APIShortenURL + "/" + code)
-
 			if err != nil {
-				return fmt.Errorf("failed to get short URL: %w", err)
+				return fmt.Errorf("failed to get short URL: \n  %w", err)
 			}
 
 			if res.StatusCode() != http.StatusOK {
@@ -442,13 +455,13 @@ func newShortenListCmd() *cobra.Command {
 					query.Set("order", "asc")
 
 					res, err := client.R().
+						SetHeader("X-API-KEY", cfg.APIKEY).
 						SetContentType("application/json").
 						SetResult(&response).
 						SetError(&resErr).
 						Get(APIShortenURL + "?" + query.Encode())
-
 					if err != nil {
-						return fmt.Errorf("failed to list short URLs: %w", err)
+						return fmt.Errorf("failed to list short URLs: \n  %w", err)
 					}
 
 					if res.StatusCode() != http.StatusOK {
@@ -493,7 +506,7 @@ func newShortenListCmd() *cobra.Command {
 					sortBy = "created_at"
 				}
 				if order == "" {
-					order = "desc"
+					order = "asc"
 				}
 
 				query := url.Values{}
@@ -503,13 +516,13 @@ func newShortenListCmd() *cobra.Command {
 				query.Set("order", order)
 
 				res, err := client.R().
+					SetHeader("X-API-KEY", cfg.APIKEY).
 					SetContentType("application/json").
 					SetResult(&response).
 					SetError(&resErr).
 					Get(APIShortenURL + "?" + query.Encode())
-
 				if err != nil {
-					return fmt.Errorf("failed to list short URLs: %w", err)
+					return fmt.Errorf("failed to list short URLs: \n  %w", err)
 				}
 
 				if res.StatusCode() != http.StatusOK {
@@ -551,13 +564,13 @@ func newShortenListCmd() *cobra.Command {
 	cmd.Flags().Int64P("page", "p", 1, "Page number")
 	cmd.Flags().Int64P("psize", "z", 10, "Page size")
 	cmd.Flags().StringP("sort", "s", "created_at", "Sort by field")
-	cmd.Flags().StringP("order", "o", "desc", "Sort order")
+	cmd.Flags().StringP("order", "o", "asc", "Sort order")
 
 	return cmd
 }
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
+		os.Exit(0)
 	}
 }

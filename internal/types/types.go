@@ -10,7 +10,7 @@ type ReqQuery struct {
 	Page     int64  `form:"page,default=1" binding:"min=1"`
 	PageSize int64  `form:"page_size,default=10" binding:"min=1,max=100"`
 	SortBy   string `form:"sort_by,default=created_at" binding:"oneof=created_at updated_at"`
-	Order    string `form:"order,default=desc" binding:"oneof=asc desc"`
+	Order    string `form:"order,default=asc" binding:"oneof=asc desc"`
 }
 
 // ResShorten 短链接响应

@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 	"go.dsig.cn/shortener/internal/handlers"
+	"go.dsig.cn/shortener/internal/middlewares"
 )
 
 func NewRouter() *gin.Engine {
@@ -37,7 +39,7 @@ func NewRouter() *gin.Engine {
 	shortener := handlers.Handle.ShortenHandler
 
 	apiV1 := g.Group("/api/v1")
-	apiV1.Use()
+	apiV1.Use(middlewares.ApiKeyAuth())
 	{
 		apiV1.POST("/shortens", shortener.ShortenAdd)
 		apiV1.GET("/shortens", shortener.ShortenList)

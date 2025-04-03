@@ -26,5 +26,8 @@ bin
 dist/
 
 tmp/
+data/*.db
 config/*/
+config.toml
 shortener
+shorten

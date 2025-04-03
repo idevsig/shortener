@@ -37,5 +37,30 @@ shorten --key KEY --url "http://127.0.0.1:8080"
 shorten help
 
 # 子命令帮助
-shorten help list
+# shorten help list
+```
+
+```bash
+Short URL management CLI tool
+
+Usage:
+  shorten [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  create      Create a short link
+  delete      Delete a short code
+  env         Print environment variables
+  get         Get a short link
+  help        Help about any command
+  init        Initialize configuration
+  list        List all short links
+  update      Update a short code
+
+Flags:
+  -h, --help         help for shorten
+  -k, --key string   API KEY
+  -u, --url string   API URL
+
+Use "shorten [command] --help" for more information about a command.
 ```

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
+
 	"go.dsig.cn/shortener/internal/shared"
 )
 

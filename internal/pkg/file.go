@@ -18,7 +18,7 @@ func MkdirIfNotExist(dir string) error {
 	}
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err := os.Mkdir(dir, 0755)
+		err := os.Mkdir(dir, 0o755)
 		if err != nil {
 			return err
 		}

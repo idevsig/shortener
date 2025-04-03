@@ -1,16 +1,15 @@
 package bootstrap
 
 import (
-	"log"
-
 	"github.com/spf13/viper"
+
 	"go.dsig.cn/shortener/internal/shared"
 	"go.dsig.cn/shortener/internal/types"
 )
 
-// initShortenConfig 初始化短链接配置
-func initShortenConfig() {
-	log.Println("shorten init")
+// initSharedConfig 初始化共享配置
+func initSharedConfig() {
+	// log.Println("shorten init")
 	length := viper.GetInt("shortener.code_length")
 	charset := viper.GetString("shortener.code_charset")
 
@@ -26,4 +25,6 @@ func initShortenConfig() {
 		Length:  length,
 		Charset: charset,
 	}
+
+	shared.GlobalAPIKey = viper.GetString("api.key")
 }

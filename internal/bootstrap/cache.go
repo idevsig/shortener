@@ -6,6 +6,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
+
 	"go.dsig.cn/shortener/internal/cache"
 	"go.dsig.cn/shortener/internal/dal/db/model"
 	"go.dsig.cn/shortener/internal/shared"

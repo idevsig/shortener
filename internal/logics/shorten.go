@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
+	"gorm.io/gorm"
+
 	"go.dsig.cn/shortener/internal/cache"
 	"go.dsig.cn/shortener/internal/dal/db/model"
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/types"
-	"gorm.io/gorm"
 )
 
 // ShortenLogic 短链接逻辑层

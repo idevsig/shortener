@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"go.dsig.cn/shortener/internal/shared"
 	"gorm.io/gorm"
+
+	"go.dsig.cn/shortener/internal/shared"
 )
 
 // logic 逻辑层

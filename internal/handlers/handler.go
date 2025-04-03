@@ -8,10 +8,8 @@ type Handler struct {
 	ShortenHandler *v1.ShortenHandler
 }
 
-var (
-	// Handle expose the handler to outside
-	Handle *Handler
-)
+// Handle expose the handler to outside
+var Handle *Handler
 
 func init() {
 	Handle = &Handler{

@@ -6,8 +6,7 @@ import (
 	"go.dsig.cn/shortener/internal/types"
 )
 
-type handler struct {
-}
+type handler struct{}
 
 // JsonRespErr 返回错误响应
 func (t *handler) JsonRespErr(errCode int) types.ResErr {

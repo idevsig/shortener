@@ -4,6 +4,7 @@ import (
 	_ "go.dsig.cn/shortener/internal/bootstrap"
 
 	"github.com/spf13/viper"
+
 	"go.dsig.cn/shortener/internal/routers"
 )
 
