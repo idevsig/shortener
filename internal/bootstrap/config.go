@@ -26,7 +26,7 @@ func initSharedConfig() {
 		Charset: charset,
 	}
 
-	shared.GlobalAPIKey = viper.GetString("api.key")
+	shared.GlobalAPIKey = viper.GetString("server.api_key")
 }
 
 // initDefaultConfig 初始化默认配置
@@ -35,10 +35,7 @@ func initDefaultConfig() {
 	viper.SetDefault("server.address", ":8080")
 	viper.SetDefault("server.trusted-platform", "")
 	viper.SetDefault("server.site_url", "http://localhost:8080")
-
-	// API配置
-	viper.SetDefault("api.url", "")
-	viper.SetDefault("api.key", "")
+	viper.SetDefault("server.api_key", "")
 
 	// 短链生成配置
 	viper.SetDefault("shortener.code_length", 6)

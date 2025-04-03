@@ -2,10 +2,7 @@
 address = ":8080"
 trusted-platform = ""
 site_url = "http://localhost:8080"
-
-[api]
-url = ""
-key = ""
+api_key = ""
 
 [shortener]
 code_length = 6

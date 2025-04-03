@@ -1,8 +1,6 @@
 package bootstrap
 
 import (
-	"log"
-
 	"github.com/bytedance/sonic"
 	"github.com/spf13/viper"
 
@@ -33,7 +31,7 @@ func initCache() {
 		case "valkey":
 			cacheClient = valkeyCache()
 		default:
-			log.Printf("cache type not support: %s", cacheCfg.Type)
+			// log.Printf("cache type not support: %s", cacheCfg.Type)
 			cacheCfg.Enabled = false
 		}
 	}
