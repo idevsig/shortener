@@ -1,5 +1,7 @@
 package ecodes
 
+import "errors"
+
 /*
 // 分类结构
 // 采用 AABBB 格式：
@@ -15,13 +17,16 @@ var errCodeMessages = map[int]string{
 	ErrCodeDatabaseError:       "数据库错误",
 	ErrCodeCacheError:          "缓存错误",
 	ErrCodeCacheDisabled:       "缓存未启用",
+	ErrCodeCacheKeyNotFound:    "缓存键不存在",
 	ErrCodeFileIOError:         "文件/IO操作错误",
 	ErrCodeNetworkError:        "网络通信错误",
 
 	ErrCodeUserNotFound:         "用户不存在",
 	ErrCodeUserExists:           "用户已存在",
 	ErrCodeUserLoginFailed:      "用户登录失败",
+	ErrCodeUserPasswordError:    "用户名或密码错误",
 	ErrCodeUserPermissionDenied: "用户权限不足",
+	ErrCodeUserAuthFailed:       "身份验证失败",
 	ErrCodeUserPhoneExists:      "手机号已存在",
 
 	ErrCodeOrderNotFound:       "订单不存在",
@@ -66,4 +71,9 @@ func GetErrCodeMessage(code int) string {
 		return message
 	}
 	return "未知错误"
+}
+
+// GetGeneralError 获取通用错误
+func GetGeneralError(code int) error {
+	return errors.New(GetErrCodeMessage(code))
 }

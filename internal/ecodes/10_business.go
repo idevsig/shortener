@@ -5,11 +5,13 @@ package ecodes
 
 用户模块 (10xxx)
 错误码范围	类别	示例代码	说明
-10000-10099	用户通用错误	10001	用户不存在
-10100-10199	注册相关错误	10101	用户名已存在
-10200-10299	登录相关错误	10201	用户名或密码错误
-10300-10399	权限相关错误	10301	无访问权限
-10400-10499	资料修改错误	10401	手机号已被使用
+10000-10099	用户通用错误	10001 用户不存在
+10100-10199	注册相关错误	10101 用户名已存在
+10200-10299	登录相关错误	10201 用户名或密码错误
+10300-10399	权限相关错误	10301 无访问权限
+						  10302	身份验证失败
+						  10303	未授权
+10400-10499	资料修改错误	10401 手机号已被使用
 
 订单模块 (11xxx)
 错误码范围	类别	示例代码	说明
@@ -33,11 +35,15 @@ package ecodes
 
 const (
 	// 用户模块
-	ErrCodeUserNotFound         = 10001
-	ErrCodeUserExists           = 10101
-	ErrCodeUserLoginFailed      = 10201
+	ErrCodeUserNotFound      = 10001
+	ErrCodeUserExists        = 10101
+	ErrCodeUserLoginFailed   = 10201
+	ErrCodeUserPasswordError = 10202
+
 	ErrCodeUserPermissionDenied = 10301
-	ErrCodeUserPhoneExists      = 10401
+	ErrCodeUserAuthFailed       = 10302
+
+	ErrCodeUserPhoneExists = 10401
 
 	// 订单模块
 	ErrCodeOrderNotFound       = 11001

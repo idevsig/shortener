@@ -26,6 +26,8 @@ const (
 	ErrCodeCacheError = 301
 	// 缓存未启用
 	ErrCodeCacheDisabled = 302
+	// 缓存键不存在
+	ErrCodeCacheKeyNotFound = 303
 
 	// 文件/IO操作错误
 	ErrCodeFileIOError = 401

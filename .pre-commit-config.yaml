@@ -1,0 +1,20 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-docstring-first
+-   repo: local
+    hooks:
+      - id: Run Test
+        name: Run Test
+        entry: |
+          echo "Running tests..."
+          just go-mod-tidy
+          just fmt
+          just lint
+        language: system

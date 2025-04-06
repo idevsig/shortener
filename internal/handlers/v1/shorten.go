@@ -1,12 +1,15 @@
 package v1
 
 import (
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/logics"
+	"go.dsig.cn/shortener/internal/shared"
 	"go.dsig.cn/shortener/internal/types"
 	"go.dsig.cn/shortener/internal/utils"
 )
@@ -80,7 +83,7 @@ func (t *ShortenHandler) ShortenAdd(c *gin.Context) {
 
 	// 生成短码
 	if reqJson.Code == "" {
-		reqJson.Code = utils.GenerateCode()
+		reqJson.Code = utils.GenerateCode(shared.GlobalShorten.Length)
 	}
 
 	if len(reqJson.Code) > 16 {
@@ -119,6 +122,28 @@ func (t *ShortenHandler) ShortenDelete(c *gin.Context) {
 		} else {
 			c.JSON(http.StatusInternalServerError, errInfo)
 		}
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// ShortenDeleteAll 删除所有短链接
+func (t *ShortenHandler) ShortenDeleteAll(c *gin.Context) {
+	var reqQuery struct {
+		IDs string `form:"ids" binding:"required"`
+	}
+	if err := c.ShouldBindQuery(&reqQuery); err != nil {
+		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
+		return
+	}
+
+	log.Printf("reqQuery.IDs: %s", reqQuery.IDs)
+	ids := strings.Split(reqQuery.IDs, ",")
+	errCode := t.logic.ShortenDeleteAll(ids)
+	if errCode != ecodes.ErrCodeSuccess {
+		errInfo := t.JsonRespErr(errCode)
+		c.JSON(http.StatusInternalServerError, errInfo)
 		return
 	}
 
@@ -185,7 +210,7 @@ func (t *ShortenHandler) ShortenFind(c *gin.Context) {
 
 // ShortenList 获取短链接列表
 func (t *ShortenHandler) ShortenList(c *gin.Context) {
-	var reqQuery types.ReqQuery
+	var reqQuery types.ReqQueryShorten
 	if err := c.ShouldBindQuery(&reqQuery); err != nil {
 		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return

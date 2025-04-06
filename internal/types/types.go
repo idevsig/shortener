@@ -10,7 +10,20 @@ type ReqQuery struct {
 	Page     int64  `form:"page,default=1" binding:"min=1"`
 	PageSize int64  `form:"page_size,default=10" binding:"min=1,max=100"`
 	SortBy   string `form:"sort_by,default=created_at" binding:"oneof=created_at updated_at"`
-	Order    string `form:"order,default=asc" binding:"oneof=asc desc"`
+	Order    string `form:"order,default=desc" binding:"oneof=asc desc"`
+}
+
+type ReqQueryShorten struct {
+	ReqQuery
+	Code        string `form:"code,omitempty" binding:"omitempty"`
+	OriginalURL string `form:"original_url,omitempty" binding:"omitempty"`
+	Status      int64  `form:"status,omitempty,default=-1" binding:"omitempty"`
+}
+
+type ReqQueryHistory struct {
+	ReqQuery
+	Code string `form:"short_code,omitempty" binding:"omitempty"`
+	IP   string `form:"ip_address,omitempty" binding:"omitempty"`
 }
 
 // ResShorten 短链接响应
@@ -23,6 +36,26 @@ type ResShorten struct {
 	Status      int8   `json:"status"`
 	CreatedTime string `json:"created_time"`
 	UpdatedTime string `json:"updated_time"`
+}
+
+// ResHistory 历史记录响应
+type ResHistory struct {
+	ID           int64  `json:"id"`
+	UrlID        int64  `json:"url_id"`
+	ShortCode    string `json:"short_code"`
+	IPAddress    string `json:"ip_address"`
+	UserAgent    string `json:"user_agent"`
+	Referer      string `json:"referer"`
+	Country      string `json:"country"`
+	Region       string `json:"region"`
+	Province     string `json:"province"`
+	City         string `json:"city"`
+	ISP          string `json:"isp"`
+	DeviceType   string `json:"device_type"`
+	OS           string `json:"os"`
+	Browser      string `json:"browser"`
+	AccessedTime string `json:"accessed_time"`
+	CreatedTime  string `json:"created_time"`
 }
 
 // ResPage 分页响应

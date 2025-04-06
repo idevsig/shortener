@@ -7,8 +7,7 @@ import (
 )
 
 // GenerateCode 生成短码(6位)
-func GenerateCode() string {
-	length := shared.GlobalShorten.Length
+func GenerateCode(length int) string {
 	charset := shared.GlobalShorten.Charset
 
 	result := make([]byte, length)

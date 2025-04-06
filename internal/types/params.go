@@ -8,3 +8,9 @@ type HistoryParams struct {
 	UserAgent string
 	Referer   string
 }
+
+// User 用户信息
+type User struct {
+	Username string `json:"Username"`
+	Password string `json:"password,omitempty"`
+}

@@ -1,7 +1,7 @@
 package logics
 
 import (
-	"strings"
+	"fmt"
 	"time"
 
 	"github.com/ua-parser/uap-go/uaparser"
@@ -9,9 +9,11 @@ import (
 	"golang.org/x/text/language"
 
 	"go.dsig.cn/shortener/internal/dal/db/model"
+	"go.dsig.cn/shortener/internal/ecodes"
 	"go.dsig.cn/shortener/internal/pkgs/geoip"
 	"go.dsig.cn/shortener/internal/shared"
 	"go.dsig.cn/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 // HistoryLogic 历史记录逻辑层
@@ -84,18 +86,78 @@ func (t *HistoryLogic) HistoryAdd(params types.HistoryParams) error {
 	return t.db.Create(&history).Error
 }
 
-// simplifyDeviceType 将具体设备型号转换为通用类型（mobile/pc/tablet）
-func simplifyDeviceType(device string) string {
-	device = strings.ToLower(device)
-	switch {
-	case strings.Contains(device, "iphone") ||
-		strings.Contains(device, "android") ||
-		strings.Contains(device, "mobile"):
-		return "mobile"
-	case strings.Contains(device, "ipad") ||
-		strings.Contains(device, "tablet"):
-		return "tablet"
-	default:
-		return "desktop"
+// HistoryDeleteAll 删除所有历史记录
+func (t *HistoryLogic) HistoryDeleteAll(ids []string) int {
+	if res := t.db.Where("id in (?)", ids).Delete(&model.History{}); res.Error != nil {
+		return ecodes.ErrCodeDatabaseError
 	}
+
+	return ecodes.ErrCodeSuccess
+}
+
+// HistoryAll 获取所有短链接
+func (t *HistoryLogic) HistoryAll(reqQuery types.ReqQueryHistory) (int, []types.ResHistory, types.ResPage) {
+	results := make([]types.ResHistory, 0)
+	pageInfo := types.ResPage{}
+
+	// 查询数据库
+	query := t.db.Model(&model.History{}).
+		Order(fmt.Sprintf("%s %s", reqQuery.SortBy, reqQuery.Order))
+
+	if reqQuery.Code != "" {
+		query = query.Where("short_code = ?", reqQuery.Code)
+	}
+
+	if reqQuery.IP != "" {
+		query = query.Where("ip_address = ?", reqQuery.IP)
+	}
+
+	// 计算总条数
+	var total int64
+	query = query.Count(&total)
+	if query.Error != nil {
+		return ecodes.ErrCodeDatabaseError, results, pageInfo
+	}
+
+	// 分页查询
+	data := make([]model.History, 0)
+	resDB := query.Offset(int((reqQuery.Page - 1) * reqQuery.PageSize)).
+		Limit(int(reqQuery.PageSize)).
+		Find(&data)
+	if resDB.Error != nil {
+		return ecodes.ErrCodeDatabaseError, results, pageInfo
+	}
+
+	// 页码信息
+	pageInfo.Page = reqQuery.Page
+	pageInfo.PageSize = reqQuery.PageSize
+	pageInfo.CurrentCount = resDB.RowsAffected
+	pageInfo.TotalItems = total
+	pageInfo.TotalPages = total / int64(reqQuery.PageSize)
+	if total%int64(reqQuery.PageSize) != 0 {
+		pageInfo.TotalPages++
+	}
+
+	for _, item := range data {
+		results = append(results, types.ResHistory{
+			ID:           item.ID,
+			UrlID:        item.UrlID,
+			ShortCode:    item.ShortCode,
+			IPAddress:    item.IPAddress,
+			UserAgent:    item.UserAgent,
+			Referer:      item.Referer,
+			Country:      item.Country,
+			Region:       item.Region,
+			Province:     item.Province,
+			City:         item.City,
+			ISP:          item.ISP,
+			DeviceType:   item.DeviceType,
+			OS:           item.OS,
+			Browser:      item.Browser,
+			AccessedTime: utils.TimeToStr(item.AccessedAt),
+			CreatedTime:  utils.TimeToStr(item.CreatedAt),
+		})
+	}
+
+	return ecodes.ErrCodeSuccess, results, pageInfo
 }

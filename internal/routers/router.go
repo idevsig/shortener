@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"go.dsig.cn/shortener/internal/handlers"
-	"go.dsig.cn/shortener/internal/middlewares"
 )
 
 func NewRouter() *gin.Engine {
@@ -36,16 +35,27 @@ func NewRouter() *gin.Engine {
 		})
 	})
 
+	account := handlers.Handle.AccountHandler
+	user := handlers.Handle.UserHandler
 	shortener := handlers.Handle.ShortenHandler
+	history := handlers.Handle.HistoryHandler
 
 	apiV1 := g.Group("/api/v1")
-	apiV1.Use(middlewares.ApiKeyAuth())
+	apiV1.POST("/account/login", account.Login)
+	apiV1.Use(authMiddleware())
 	{
 		apiV1.POST("/shortens", shortener.ShortenAdd)
 		apiV1.GET("/shortens", shortener.ShortenList)
+		apiV1.DELETE("/shortens", shortener.ShortenDeleteAll)
 		apiV1.GET("/shortens/:code", shortener.ShortenFind)
 		apiV1.PUT("/shortens/:code", shortener.ShortenUpdate)
 		apiV1.DELETE("/shortens/:code", shortener.ShortenDelete)
+
+		apiV1.GET("/histories", history.HistoryList)
+		apiV1.DELETE("/histories", history.HistoryDeleteAll)
+
+		apiV1.POST("/account/logout", account.Logout)
+		apiV1.GET("/users/current", user.Current)
 	}
 
 	// 短链接跳转路由

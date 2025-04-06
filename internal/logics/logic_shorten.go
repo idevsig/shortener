@@ -92,6 +92,22 @@ func (t *ShortenLogic) ShortenDelete(code string) int {
 	return ecodes.ErrCodeSuccess
 }
 
+// ShortenDeleteAll 删除所有短链接
+func (t *ShortenLogic) ShortenDeleteAll(ids []string) int {
+	if res := t.db.Where("id in (?)", ids).Delete(&model.Url{}); res.Error != nil {
+		return ecodes.ErrCodeDatabaseError
+	}
+
+	// 删除缓存
+	for _, id := range ids {
+		if err := t.cache.Delete(t.cache.GetKey(id)); err != nil && !errors.Is(err, ecodes.ErrCacheDisabled) {
+			return ecodes.ErrCodeCacheError // 缓存删除失败
+		}
+	}
+
+	return ecodes.ErrCodeSuccess
+}
+
 // ShortenUpdate 更新短链接
 func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe string) (int, types.ResShorten) {
 	result := types.ResShorten{}
@@ -182,13 +198,25 @@ func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 }
 
 // ShortenAll 获取所有短链接
-func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQuery) (int, []types.ResShorten, types.ResPage) {
+func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQueryShorten) (int, []types.ResShorten, types.ResPage) {
 	results := make([]types.ResShorten, 0)
 	pageInfo := types.ResPage{}
 
 	// 查询数据库
 	query := t.db.Model(&model.Url{}).
 		Order(fmt.Sprintf("%s %s", reqQuery.SortBy, reqQuery.Order))
+
+	if reqQuery.Code != "" {
+		query = query.Where("short_code = ?", reqQuery.Code)
+	}
+
+	if reqQuery.OriginalURL != "" {
+		query = query.Where("original_url = ?", reqQuery.OriginalURL)
+	}
+
+	if reqQuery.Status != -1 {
+		query = query.Where("status = ?", reqQuery.Status)
+	}
 
 	// 计算总条数
 	var total int64

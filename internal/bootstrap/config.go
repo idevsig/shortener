@@ -1,10 +1,13 @@
 package bootstrap
 
 import (
+	"os"
+
 	"github.com/spf13/viper"
 
 	"go.dsig.cn/shortener/internal/shared"
 	"go.dsig.cn/shortener/internal/types"
+	"go.dsig.cn/shortener/internal/utils"
 )
 
 // initSharedConfig 初始化共享配置
@@ -27,6 +30,8 @@ func initSharedConfig() {
 	}
 
 	shared.GlobalAPIKey = viper.GetString("server.api_key")
+
+	initUserConfig()
 }
 
 // initDefaultConfig 初始化默认配置
@@ -40,6 +45,10 @@ func initDefaultConfig() {
 	// 短链生成配置
 	viper.SetDefault("shortener.code_length", 6)
 	viper.SetDefault("shortener.code_charset", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	// 登录账号和密码
+	viper.SetDefault("admin.username", "")
+	viper.SetDefault("admin.password", "")
 
 	// 数据库配置
 	viper.SetDefault("database.type", "sqlite")
@@ -91,4 +100,30 @@ func initDefaultConfig() {
 	viper.SetDefault("geoip.type", "ip2region")
 	viper.SetDefault("geoip.ip2region.path", "data/ip2region.xdb")
 	viper.SetDefault("geoip.ip2region.mode", "vector")
+}
+
+func initUserConfig() {
+	username := os.Getenv("SHORTENER_USERNAME")
+	if username == "" {
+		username = viper.GetString("admin.username")
+	}
+
+	password := os.Getenv("SHORTENER_PASSWORD")
+	if password == "" {
+		password = viper.GetString("admin.password")
+	}
+
+	// 如果是空值则自动生成随机账号和密码
+	if username == "" {
+		username = utils.GenerateCode(5)
+	}
+
+	if password == "" {
+		password = utils.GenerateCode(10)
+	}
+
+	shared.GlobalUser = &types.User{
+		Username: username,
+		Password: password,
+	}
 }

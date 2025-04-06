@@ -6,7 +6,7 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
-# goreleaser release --clean 
+# goreleaser release --clean
 # goreleaser release --snapshot --clean
 # goreleaser release --skip=publish
 
@@ -52,7 +52,7 @@ builds:
       - riscv64
     ldflags:
       - '-s -w'
-      - '-X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}'   
+      - '-X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}'
     main: ./cmd/shorten/main.go
     binary: "shorten"
 
@@ -73,14 +73,14 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        formats: 
+        formats:
         - zip
 
     files:
       - LICENSE
       - README.md
       - src: config/config.toml
-        dst: config.toml      
+        dst: config.toml
 
 changelog:
   sort: asc

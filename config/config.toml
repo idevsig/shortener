@@ -8,6 +8,10 @@ api_key = ""
 code_length = 6
 code_charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+[admin]
+username = ""
+password = ""
+
 [database]
 type = "sqlite"
 log_level = 0

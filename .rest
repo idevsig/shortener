@@ -3,11 +3,13 @@
 @hostname = localhost
 @port = 8080
 @host = {{hostname}}:{{port}}
+@api_host = {{host}}/api/v1
 @schema = http
 @contentType = application/json
 
 @code = shortener
 @apiKey = 1234567890
+@apiToken = 6FPsqtWqYafgOFCQGuWg3K0268u1k77t
 
 ### PING
 
@@ -17,10 +19,23 @@ GET {{schema}}://{{host}}/ping
 
 GET {{schema}}://{{host}}/{{code}}{{$randomInt 5 100}}
 
+
+### 登录账号
+
+POST {{schema}}://{{api_host}}/account/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin",
+  "auto": true
+}
+
 ### 添加短网址（随机）
 
-POST {{schema}}://{{host}}/api/v1/shortens
+POST {{schema}}://{{api_host}}/shortens
 Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 {
   "original_url": "https://go.dsig.cn/shortener",
@@ -30,7 +45,7 @@ Content-Type: {{contentType}}
 
 ### 添加短网址（随机 + KEY）
 
-POST {{schema}}://{{host}}/api/v1/shortens
+POST {{schema}}://{{api_host}}/shortens
 Content-Type: {{contentType}}
 X-API-KEY: {{apiKey}}
 
@@ -40,10 +55,10 @@ X-API-KEY: {{apiKey}}
   "describe": "短网址"
 }
 
-
 ### 添加短网址
-POST {{schema}}://{{host}}/api/v1/shortens
+POST {{schema}}://{{api_host}}/shortens
 Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 {
   "original_url": "https://go.dsig.cn/shortener",
@@ -53,16 +68,21 @@ Content-Type: {{contentType}}
 
 ### 删除短网址（随机）
 
-DELETE {{schema}}://{{host}}/api/v1/shortens/{{code}}{{$randomInt 5 100}}
+DELETE {{schema}}://{{api_host}}/shortens/{{code}}{{$randomInt 5 100}}
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 ### 删除短网址
 
-DELETE {{schema}}://{{host}}/api/v1/shortens/{{code}}
+DELETE {{schema}}://{{api_host}}/shortens/{{code}}
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 ### 更新短网址（随机）
 
-PUT {{schema}}://{{host}}/api/v1/shortens/{{code}}{{$randomInt 5 100}}
+PUT {{schema}}://{{api_host}}/shortens/{{code}}{{$randomInt 5 100}}
 Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 {
   "original_url": "https://go.dsig.cn/{{code}}{{$randomInt 5 100}}",
@@ -71,8 +91,9 @@ Content-Type: {{contentType}}
 
 ### 更新短网址
 
-PUT {{schema}}://{{host}}/api/v1/shortens/{{code}}
+PUT {{schema}}://{{api_host}}/shortens/{{code}}
 Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 {
   "original_url": "https://go.dsig.cn/{{code}}{{$randomInt 5 100}}",
@@ -81,16 +102,24 @@ Content-Type: {{contentType}}
 
 ### 获取短网址详情（随机）
 
-GET {{schema}}://{{host}}/api/v1/shortens/{{code}}{{$randomInt 5 100}}
+GET {{schema}}://{{api_host}}/shortens/{{code}}{{$randomInt 5 100}}
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 ### 获取短网址详情
 
-GET {{schema}}://{{host}}/api/v1/shortens/{{code}}963
+GET {{schema}}://{{api_host}}/shortens/{{code}}963
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 ### 获取短网址列表（随机）
 
-GET {{schema}}://{{host}}/api/v1/shortens?page={{$randomInt 1 3}}&page_size={{$randomInt 1 5}}
+GET {{schema}}://{{api_host}}/shortens?page={{$randomInt 1 3}}&page_size={{$randomInt 1 5}}
+Content-Type: {{contentType}}
+X-API-KEY: {{apiKey}}
 
 ### 获取短网址列表
 
-GET {{schema}}://{{host}}/api/v1/shortens?page=1&page_size=10
+GET {{schema}}://{{api_host}}/shortens?page=1&page_size=10
+Content-Type: {{contentType}}
+Authorization: Bearer {{apiToken}}

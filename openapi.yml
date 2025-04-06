@@ -8,7 +8,7 @@ info:
     email: 'i@jetsung.com'
   license:
     name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html    
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.1.0
 servers:
   - url: http://127.0.0.1:8080/api/v1
@@ -48,7 +48,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"  
+                $ref: "#/components/schemas/Error"
 
     get:
       tags:
@@ -108,16 +108,21 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items: 
-                  $ref: '#/components/schemas/ShortenResponse'          
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShortenResponse'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
         default:
           description: '未知错误'
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-                
+
   /shorten/{code}:
     get:
       tags:
@@ -170,7 +175,7 @@ paths:
             type: string
             maxLength: 16
             pattern: '^[a-zA-Z0-9]+$'
-            example: 'aBc123'      
+            example: 'aBc123'
       requestBody:
         required: true
         content:
@@ -195,7 +200,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error" 
+                $ref: "#/components/schemas/Error"
 
     delete:
       tags:
@@ -212,7 +217,7 @@ paths:
             type: string
             maxLength: 8
             pattern: '^[a-zA-Z0-9]+$'
-            example: 'aBc123'  
+            example: 'aBc123'
       responses:
         '204':
           description: '操作成功'
@@ -256,12 +261,12 @@ components:
         original_url:
           type: string
           format: uri
-          description: '原始长网址'      
+          description: '原始长网址'
         describe:
           type: string
           description: '长网址描述'
       required:
-        - original_url   
+        - original_url
 
     ShortenResponse:
       type: object
@@ -273,7 +278,7 @@ components:
           type: string
           description: '短码'
           maxLength: 16
-          pattern: '^[a-zA-Z0-9]+$'        
+          pattern: '^[a-zA-Z0-9]+$'
         short_url:
           type: string
           format: uri
@@ -284,7 +289,7 @@ components:
           description: '原始长网址'
         describe:
           type: string
-          description: '长网址描述' 
+          description: '长网址描述'
         status:
           type: integer
           description: '状态'
@@ -293,9 +298,28 @@ components:
           description: '创建时间'
         updated_time:
           type: string
-          description: '更新时间'      
+          description: '更新时间'
 
-    Error: 
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: 当前页码
+        page_size:
+          type: integer
+          description: 每页条数
+        current_count:
+          type: integer
+          description: 当前页的记录数
+        total_items:
+          type: integer
+          description: 总记录数
+        total_pages:
+          type: integer
+          description: 总页数
+
+    Error:
       type: object
       properties:
         errcode:
@@ -303,4 +327,4 @@ components:
           description: '错误代码'
         errinfo:
           type: string
-          description: '错误信息'          
+          description: '错误信息'

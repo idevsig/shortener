@@ -1,13 +1,13 @@
 services:
   shortener:
-    build: 
+    build:
       context: ../../
       dockerfile: deploy/docker/Dockerfile
       args:
         GOPROXY: "https://goproxy.cn"
         OS_MIRROR: "http://mirrors.tencent.com/debian"
     container_name: shortener
-    restart: unless-stopped        
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
       - GIN_MODE=debug
@@ -33,7 +33,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=shortener
     profiles:
-      - mysql   
+      - mysql
 
   postgres:
     image: postgres:latest
@@ -42,9 +42,9 @@ services:
       - TZ=Asia/Shanghai
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=shortener    
+      - POSTGRES_DB=shortener
     profiles:
-      - postgres 
+      - postgres
 
   redis:
     image: redis:latest
@@ -52,7 +52,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     profiles:
-      - redis 
+      - redis
 
 volumes:
   data:

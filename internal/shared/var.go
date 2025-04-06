@@ -1,6 +1,8 @@
 package shared
 
 import (
+	"sync"
+
 	"gorm.io/gorm"
 
 	"go.dsig.cn/shortener/internal/cache"
@@ -14,4 +16,7 @@ var (
 	GlobalAPIKey  string
 	GlobalCache   *cache.CacheManager
 	GlobalGeoIP   *geoip.GeoIPManager
+
+	GlobalUser      *types.User
+	GlobalUserCache sync.Map
 )

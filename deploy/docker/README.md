@@ -9,7 +9,7 @@ services:
   shortener:
     image: idevsig/shortener:latest
     container_name: shortener
-    restart: unless-stopped        
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
       - GIN_MODE=release
@@ -17,8 +17,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./config.toml:/app/config.toml      
-```      
+      - ./config.toml:/app/config.toml
+```
 
 ### PostgreSQL
 ```yaml
@@ -26,7 +26,7 @@ services:
   shortener:
     image: idevsig/shortener:latest
     container_name: shortener
-    restart: unless-stopped        
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
       - GIN_MODE=release
@@ -34,9 +34,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./config.toml:/app/config.toml      
+      - ./config.toml:/app/config.toml
     depends_on:
-      - postgres      
+      - postgres
 
   postgres:
     image: postgres:latest
@@ -46,7 +46,7 @@ services:
       - TZ=Asia/Shanghai
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=shortener      
+      - POSTGRES_DB=shortener
 ```
 
 ### MySQL
@@ -63,10 +63,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./config.toml:/app/config.toml      
+      - ./config.toml:/app/config.toml
     depends_on:
-      - mysql      
-      
+      - mysql
+
   mysql:
     image: mysql:latest
     container_name: mysql

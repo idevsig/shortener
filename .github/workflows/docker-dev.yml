@@ -66,4 +66,4 @@ jobs:
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
           targets: ${{ matrix.tag }}
-          push: ${{ github.event_name != 'pull_request' }}                    
+          push: ${{ github.event_name != 'pull_request' }}

@@ -106,3 +106,10 @@ go-mod-tidy:
             go get -u ./... && \
             go mod tidy)
     done
+
+# Pre-commit
+pre-commit:
+    @echo "Running pre-commit..."
+    @just go-mod-tidy
+    @just fmt
+    @just lint

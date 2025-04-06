@@ -39,10 +39,10 @@ target "default" {
         GO_VERSION="${GO_VERSION}"
         GOPROXY = "https://goproxy.cn"
         OS_MIRROR = "http://mirrors.tencent.com/debian"
-    }    
+    }
     tags = [
       "shortener:local",
-    ]    
+    ]
 }
 
 group "dev" {
