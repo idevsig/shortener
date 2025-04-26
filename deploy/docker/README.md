@@ -96,7 +96,7 @@ DATABASE_TYPE=postgres docker compose --profile postgres up -d
 DATABASE_TYPE=postgres docker compose --profile postgres down
 ```
 
-# sqlite redis test
+# sqlite valkey test
 ```bash
 DATABASE_TYPE=sqlite docker compose --profile sqlite up -d
 DATABASE_TYPE=sqlite docker compose --profile sqlite down

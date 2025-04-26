@@ -8,6 +8,10 @@ api_key = ""
 code_length = 6
 code_charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+[admin]
+username = ""
+password = ""
+
 [database]
 type = "sqlite"
 log_level = 0
@@ -36,7 +40,7 @@ loc = "Local"
 
 [cache]
 enabled = true
-type = "redis"
+type = "valkey"
 expire = 3600
 prefix = "shorten:"
 
@@ -59,3 +63,4 @@ type = "ip2region"
 
 [geoip.ip2region]
 path = "data/ip2region.xdb"
+mode = "vector"

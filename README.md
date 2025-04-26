@@ -50,6 +50,38 @@ goreleaser release --snapshot --clean
 just --list
 ```
 
+## 部署
+### Docker
+```yaml
+---
+# https://github.com/idevsig/shortener
+
+services:
+  shortener:
+    image: ghcr.io/idevsig/shortener:dev-amd64
+    container_name: shortener
+    restart: unless-stopped
+    ports:
+      - ${BACKEND_PORT:-8080}:8080
+    volumes:
+      - ./data:/app/data
+      - ./config.toml:/app/config.toml
+    depends_on:
+      - valkey
+
+  valkey:
+    image: valkey/valkey:latest
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+
+  frontend:
+    image: ghcr.io/idevsig/shortener-frontend:dev-amd64
+    restart: unless-stopped
+    ports:
+      - ${FRONTEND_PORT:-8081}:80
+```
+
 ## TODO
 
 - [x] 实现全部功能接口

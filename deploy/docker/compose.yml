@@ -21,7 +21,7 @@ services:
       - sqlite
       - mysql
       - postgres
-      - redis
+      - valkey
 
   mysql:
     image: mysql:latest
@@ -46,13 +46,13 @@ services:
     profiles:
       - postgres
 
-  redis:
-    image: redis:latest
+  valkey:
+    image: valkey/valkey:latest
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
     profiles:
-      - redis
+      - valkey
 
 volumes:
   data:

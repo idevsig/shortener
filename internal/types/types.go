@@ -9,8 +9,8 @@ type ReqCode struct {
 type ReqQuery struct {
 	Page     int64  `form:"page,default=1" binding:"min=1"`
 	PageSize int64  `form:"page_size,default=10" binding:"min=1,max=100"`
-	SortBy   string `form:"sort_by,default=created_at" binding:"oneof=created_at updated_at"`
-	Order    string `form:"order,default=desc" binding:"oneof=asc desc"`
+	SortBy   string `form:"sort_by"`
+	Order    string `form:"order" binding:"oneof=asc desc"`
 }
 
 type ReqQueryShorten struct {
@@ -34,8 +34,8 @@ type ResShorten struct {
 	OriginalURL string `json:"original_url"`
 	Describe    string `json:"describe"`
 	Status      int8   `json:"status"`
-	CreatedTime string `json:"created_time"`
-	UpdatedTime string `json:"updated_time"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }
 
 // ResHistory 历史记录响应
@@ -54,8 +54,8 @@ type ResHistory struct {
 	DeviceType   string `json:"device_type"`
 	OS           string `json:"os"`
 	Browser      string `json:"browser"`
-	AccessedTime string `json:"accessed_time"`
-	CreatedTime  string `json:"created_time"`
+	AccessedTime string `json:"accessed_at"`
+	CreatedTime  string `json:"created_at"`
 }
 
 // ResPage 分页响应

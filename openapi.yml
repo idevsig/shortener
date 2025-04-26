@@ -16,8 +16,81 @@ servers:
 tags:
   - name: shorten
     description: 短址
+  - name: history
+    description: 历史记录
+  - name: account
+    description: 账号
 paths:
-  /shortens:
+  /api/account/login:
+    post:
+      tags:
+        - account
+      description: 登录接口
+      operationId: login
+      requestBody:
+        description: 登录系统
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginParams'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+        '401':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-codegen-request-body-name: body
+    x-swagger-router-controller: api
+  /api/account/logout:
+    post:
+      description: 退出登录接口
+      operationId: logout
+      tags:
+        - account
+      responses:
+        '204':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    x-swagger-router-controller: api
+  /api/users/current:
+    get:
+      tags:
+        - account
+      description: 获取当前的用户
+      operationId: currentUser
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+        '401':
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    x-swagger-router-controller: api
+
+  /api/shortens:
     post:
       tags:
         - shorten
@@ -48,7 +121,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
     get:
       tags:
@@ -77,10 +150,7 @@ paths:
           required: false
           schema:
             type: string
-            default: 'created_time'
-            enum:
-              - created_time
-              - updated_time
+            default: 'created_at'
         - name: order
           in: query
           description: '排序方向'
@@ -115,13 +185,15 @@ paths:
                     items:
                       $ref: '#/components/schemas/ShortenResponse'
                   meta:
-                    $ref: '#/components/schemas/PaginationMeta'
-        default:
+                    type: object
+                    $ref: '#/components/schemas/PageMeta'
+
+        "400":
           description: '未知错误'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       tags:
@@ -150,9 +222,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
-  /shorten/{code}:
+  /api/shortens/{code}:
     get:
       tags:
         - shorten
@@ -182,13 +254,12 @@ paths:
           description: '短网址不存在'
         '500':
           description: '操作失败'
-        default:
-          description: '未知错误'
+        '401':
+          description: '未授权'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - shorten
@@ -229,8 +300,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
-
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
         - shorten
@@ -256,12 +326,12 @@ paths:
           description: '短网址不存在'
         '500':
           description: '操作失败'
-        default:
-          description: '未知错误'
+        '401':
+          description: '未授权'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/histories:
     get:
@@ -291,10 +361,7 @@ paths:
           required: false
           schema:
             type: string
-            default: 'created_time'
-            enum:
-              - created_time
-              - updated_time
+            default: 'created_at'
         - name: order
           in: query
           description: '排序方向'
@@ -322,15 +389,21 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/HistoryResponse'
-        default:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HistoryResponse'
+                  meta:
+                    type: object
+                    $ref: '#/components/schemas/PageMeta'
+        '400':
           description: '未知错误'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       tags:
@@ -359,10 +432,138 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
+    PageMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: 当前页码
+          example: 1
+        page_size:
+          type: integer
+          description: 每页数量
+          example: 10
+        current_count:
+          type: integer
+          description: 当前页条目数
+          example: 10
+        total_items:
+          type: integer
+          description: 总条目数
+          example: 100
+        total_pages:
+          type: integer
+          description: 总页数
+          example: 10
+
+    PageParams:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: 页码
+          example: 1
+        page_size:
+          type: integer
+          description: 每页数量
+          example: 10
+        sort_by:
+          type: string
+          description: 排序字段
+          example: "create_at"
+        order:
+          type: string
+          enum: [asc, desc]
+          default: desc
+          description: 排序方式
+
+    PageQuery:
+      type: object
+      properties:
+        current:
+          type: integer
+          description: 当前页码
+          example: 1
+        pageSize:
+          type: integer
+          description: 每页数量
+          example: 10
+
+    RespList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            description: 实际数据类型需要替换
+          description: 数据列表
+        success:
+          type: boolean
+          description: 请求是否成功
+          example: true
+        total:
+          type: integer
+          description: 总条目数
+          example: 100
+
+    ItemList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            description: 实际数据类型需要替换
+          description: 数据列表
+        meta:
+          $ref: '#/components/schemas/PageMeta'
+    LoginParams:
+      type: object
+      properties:
+        username:
+          description: 用户名
+          type: string
+        password:
+          description: 密码
+          type: string
+        auto:
+          description: 是否自动登录
+          type: boolean
+    LoginResult:
+      type: object
+      properties:
+        token:
+          type: string
+          description: 登录成功后返回的 token
+        errcode:
+          type: string
+          description: 业务约定的错误码
+        errinfo:
+          type: string
+          description: 业务上的错误信息
+    CurrentUser:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 用户名
+    ErrorResponse:
+      required:
+        - errcode
+      type: object
+      properties:
+        errcode:
+          type: string
+          description: 业务约定的错误码
+        errinfo:
+          type: string
+          description: 业务上的错误信息
+
     Shorten:
       type: object
       properties:
@@ -420,10 +621,10 @@ components:
         status:
           type: integer
           description: '状态'
-        created_time:
+        created_at:
           type: string
           description: '创建时间'
-        updated_time:
+        updated_at:
           type: string
           description: '更新时间'
 
@@ -489,11 +690,11 @@ components:
           browser:
             type: string
             enum: [Chrome, Firefox, Safari, Edge]
-          accessed_time:
+          accessed_at:
             type: string
             format: date-time
             example: "2024-03-20T12:00:00Z"
-          created_time:
+          created_at:
             type: string
             format: date-time
             example: "2024-03-20T12:00:00Z"
@@ -512,34 +713,5 @@ components:
           - device_type
           - os
           - browser
-          - accessed_time
-          - created_time
-
-    PaginationMeta:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: 当前页码
-        page_size:
-          type: integer
-          description: 每页条数
-        current_count:
-          type: integer
-          description: 当前页的记录数
-        total_items:
-          type: integer
-          description: 总记录数
-        total_pages:
-          type: integer
-          description: 总页数
-
-    Error:
-      type: object
-      properties:
-        errcode:
-          type: integer
-          description: '错误代码'
-        errinfo:
-          type: string
-          description: '错误信息'
+          - accessed_at
+          - created_at

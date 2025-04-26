@@ -69,8 +69,8 @@ func (t *ShortenLogic) ShortenAdd(code string, originalURL string, describe stri
 		OriginalURL: newURL.OriginalURL,
 		Describe:    newURL.Describe,
 		Status:      newURL.Status,
-		CreatedTime: utils.TimeToStr(nowTime),
-		UpdatedTime: utils.TimeToStr(nowTime),
+		CreatedAt:   utils.TimeToStr(nowTime),
+		UpdatedAt:   utils.TimeToStr(nowTime),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -149,8 +149,8 @@ func (t *ShortenLogic) ShortenUpdate(code string, originalURL string, describe s
 		OriginalURL: existingURL.OriginalURL,
 		Describe:    existingURL.Describe,
 		Status:      existingURL.Status,
-		UpdatedTime: utils.TimeToStr(nowTime),
-		CreatedTime: utils.TimeToStr(existingURL.CreatedAt),
+		UpdatedAt:   utils.TimeToStr(nowTime),
+		CreatedAt:   utils.TimeToStr(existingURL.CreatedAt),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -190,8 +190,8 @@ func (t *ShortenLogic) ShortenFind(code string) (int, types.ResShorten) {
 		OriginalURL: data.OriginalURL,
 		Describe:    data.Describe,
 		Status:      data.Status,
-		CreatedTime: utils.TimeToStr(data.CreatedAt),
-		UpdatedTime: utils.TimeToStr(data.UpdatedAt),
+		CreatedAt:   utils.TimeToStr(data.CreatedAt),
+		UpdatedAt:   utils.TimeToStr(data.UpdatedAt),
 	}
 
 	return ecodes.ErrCodeSuccess, result
@@ -252,8 +252,8 @@ func (t *ShortenLogic) ShortenAll(reqQuery types.ReqQueryShorten) (int, []types.
 			OriginalURL: item.OriginalURL,
 			Describe:    item.Describe,
 			Status:      item.Status,
-			CreatedTime: utils.TimeToStr(item.CreatedAt),
-			UpdatedTime: utils.TimeToStr(item.UpdatedAt),
+			CreatedAt:   utils.TimeToStr(item.CreatedAt),
+			UpdatedAt:   utils.TimeToStr(item.UpdatedAt),
 		})
 	}
 

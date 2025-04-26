@@ -212,6 +212,7 @@ func (t *ShortenHandler) ShortenFind(c *gin.Context) {
 func (t *ShortenHandler) ShortenList(c *gin.Context) {
 	var reqQuery types.ReqQueryShorten
 	if err := c.ShouldBindQuery(&reqQuery); err != nil {
+		log.Printf("err: %v", err)
 		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
 	}
