@@ -123,6 +123,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+    delete:
+      tags:
+        - shorten
+      summary: '删除短网址列表'
+      description: '删除短网址列表'
+      operationId: 'deleteShorten'
+      parameters:
+        - name: ids
+          in: query
+          description: 'id 列表，多个id用逗号分隔'
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: '操作成功'
+        '400':
+          description: '请求错误'
+        '404':
+          description: '短网址不存在'
+        '500':
+          description: '操作失败'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /shorten/{code}:
     get:
       tags:
@@ -234,6 +263,104 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /api/histories:
+    get:
+      tags:
+        - history
+      summary: '获取所有日志信息'
+      description: '获取所有日志信息'
+      operationId: 'getHistories'
+      parameters:
+        - name: page
+          in: query
+          description: '页码'
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          description: '每页条数'
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: sort_by
+          in: query
+          description: '排序字段'
+          required: false
+          schema:
+            type: string
+            default: 'created_time'
+            enum:
+              - created_time
+              - updated_time
+        - name: order
+          in: query
+          description: '排序方向'
+          required: false
+          schema:
+            type: string
+            default: 'desc'
+            enum:
+              - asc
+              - desc
+        - name: status
+          in: query
+          description: '状态'
+          required: false
+          schema:
+            type: integer
+            default: 0
+            enum:
+              - 0
+              - 1
+              - 2
+      responses:
+        '200':
+          description: '操作成功'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryResponse'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      tags:
+        - history
+      summary: '删除日志列表'
+      description: '删除日志列表'
+      operationId: 'deleteHistories'
+      parameters:
+        - name: ids
+          in: query
+          description: 'id 列表，多个id用逗号分隔'
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: '操作成功'
+        '400':
+          description: '请求错误'
+        '404':
+          description: '日志不存在'
+        '500':
+          description: '操作失败'
+        default:
+          description: '未知错误'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     Shorten:
@@ -299,6 +426,94 @@ components:
         updated_time:
           type: string
           description: '更新时间'
+
+    HistoryResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            minimum: 1
+            description: 自增ID（连续递增）
+          url_id:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            description: 短链接ID（1-100随机）
+          short_code:
+            type: string
+            pattern: ^\w{5,8}$
+            example: "xY7z9"
+            description: 5-8位短码
+          ip_address:
+            type: string
+            format: ipv4
+            example: 192.168.0.1
+          user_agent:
+            type: string
+            minLength: 16
+            maxLength: 32
+            example: "Mozilla/5.0 (Windows NT 10.0)"
+          referer:
+            type: string
+            format: uri
+            example:
+            - google: https://google.com?q=xY7z9
+            - baidu: https://baidu.com?q=xY7z9
+          country:
+            type: string
+            example: 中国
+          region:
+            type: string
+            example: 华东
+          province:
+            type: string
+            example: 广东省
+          city:
+            type: string
+            example: 深圳市
+          isp:
+            type: string
+            minLength: 4
+            maxLength: 8
+            example: 中国电信
+          device_type:
+            type: string
+            enum: [pc, mobile, tablet]
+          os:
+            type: string
+            enum: [Windows, MacOS, Linux, Android, iOS]
+          browser:
+            type: string
+            enum: [Chrome, Firefox, Safari, Edge]
+          accessed_time:
+            type: string
+            format: date-time
+            example: "2024-03-20T12:00:00Z"
+          created_time:
+            type: string
+            format: date-time
+            example: "2024-03-20T12:00:00Z"
+        required:
+          - id
+          - url_id
+          - short_code
+          - ip_address
+          - user_agent
+          - referer
+          - country
+          - region
+          - province
+          - city
+          - isp
+          - device_type
+          - os
+          - browser
+          - accessed_time
+          - created_time
 
     PaginationMeta:
       type: object
