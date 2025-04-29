@@ -6,7 +6,8 @@ services:
       args:
         GOPROXY: "https://goproxy.cn"
         OS_MIRROR: "http://mirrors.tencent.com/debian"
-    container_name: shortener
+    # image: shortener:local
+    container_name: shortener-server
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai

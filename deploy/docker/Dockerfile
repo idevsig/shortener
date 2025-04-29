@@ -20,7 +20,7 @@ COPY . .
 # rm -rf /var/lib/apt/lists/*
 
 # # 安装 just
-# curl -fsSL https://s.asfd.cn/hM1Rzj | bash
+# curl -fsSL https://s.fx4.cn/hM1Rzj | bash
 
 # # 构建与整理
 # just tidy
@@ -37,6 +37,7 @@ CGO_ENABLED=0 GOFLAGS="-trimpath" go build -ldflags "-s -w" -o /build/public/sho
 EOF
 
 FROM scratch AS prod
+# FROM gcr.io/distroless/cc-debian12 AS prod
 
 WORKDIR /app
 

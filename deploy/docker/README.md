@@ -7,7 +7,7 @@
 ```yaml
 services:
   shortener:
-    image: idevsig/shortener:latest
+    image: idevsig/shortener-server:latest
     container_name: shortener
     restart: unless-stopped
     environment:
@@ -24,7 +24,7 @@ services:
 ```yaml
 services:
   shortener:
-    image: idevsig/shortener:latest
+    image: idevsig/shortener-server:latest
     container_name: shortener
     restart: unless-stopped
     environment:
@@ -53,7 +53,7 @@ services:
 ```yaml
 services:
   shortener:
-    image: idevsig/shortener:latest
+    image: idevsig/shortener-server:latest
     container_name: shortener
     restart: unless-stopped
     environment:

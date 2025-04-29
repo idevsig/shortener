@@ -9,8 +9,8 @@ type ReqCode struct {
 type ReqQuery struct {
 	Page     int64  `form:"page,default=1" binding:"min=1"`
 	PageSize int64  `form:"page_size,default=10" binding:"min=1,max=100"`
-	SortBy   string `form:"sort_by"`
-	Order    string `form:"order" binding:"oneof=asc desc"`
+	SortBy   string `form:"sort_by,omitempty"`
+	Order    string `form:"order,omitempty" binding:"omitempty,oneof=asc desc"`
 }
 
 type ReqQueryShorten struct {

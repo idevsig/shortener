@@ -29,7 +29,7 @@ func initSharedConfig() {
 		Charset: charset,
 	}
 
-	shared.GlobalAPIKey = viper.GetString("server.api_key")
+	initAPIKeyConfig()
 
 	initUserConfig()
 }
@@ -100,6 +100,19 @@ func initDefaultConfig() {
 	viper.SetDefault("geoip.type", "ip2region")
 	viper.SetDefault("geoip.ip2region.path", "data/ip2region.xdb")
 	viper.SetDefault("geoip.ip2region.mode", "vector")
+}
+
+func initAPIKeyConfig() {
+	apiKey := os.Getenv("SHORTENER_API_KEY")
+	if apiKey == "" {
+		apiKey = viper.GetString("server.api_key")
+	}
+
+	if apiKey == "" {
+		apiKey = utils.GenerateCode(32)
+	}
+
+	shared.GlobalAPIKey = apiKey
 }
 
 func initUserConfig() {

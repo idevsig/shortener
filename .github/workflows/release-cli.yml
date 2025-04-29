@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - "cmd*"
-    paths:
-      - ".github/workflows/release-cli.yml"
-      - "cmd/shortener/**"
 jobs:
   build:
     runs-on: ubuntu-latest

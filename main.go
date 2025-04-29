@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "go.dsig.cn/shortener/internal/bootstrap"
+	"go.dsig.cn/shortener/internal/shared"
 
 	"github.com/spf13/viper"
 
@@ -23,9 +24,10 @@ var description = `
  |_____/|_| |_|\___/|_|   \__\___|_| |_|\___|_|   
                                                   			
  Shortener: %s
- Project: https://git.jetsung.com/idev/shortener
+ Project: https://git.jetsung.com/idev/shortener-server
  Website: https://i.jetsung.com
  Author:  Jetsung Chan <i@jetsung.com>
+
 `
 
 func main() {
@@ -33,7 +35,14 @@ func main() {
 	if addr == "" {
 		addr = ":8080"
 	}
+
 	fmt.Printf(description, version)
+	fmt.Printf(" api key: %s \n username: %s \n password: %s \n\n",
+		shared.GlobalAPIKey,
+		shared.GlobalUser.Username,
+		shared.GlobalUser.Password,
+	)
+
 	r := routers.NewRouter()
 	if err := r.Run(addr); err != nil {
 		panic("run server failed: " + err.Error())
