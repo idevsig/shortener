@@ -10,6 +10,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
+
 	_ "modernc.org/sqlite"
 
 	"go.dsig.cn/shortener/internal/dal/db/model"
@@ -65,14 +66,16 @@ func connectSqlite() gorm.Dialector {
 		panic("failed to create database file: " + err.Error())
 	}
 
-	// dialector := sqlite.Open(dsn)
 	// 使用 gorm 内置 SQLite 驱动
+	// dialector := sqlite.Open(dsn)
 
 	// 使用 modernc.org/sqlite 作为驱动
-	return sqlite.Dialector{
+	dialector := sqlite.Dialector{
 		DriverName: "sqlite",
 		DSN:        dsn, // 数据库文件
 	}
+
+	return dialector
 }
 
 // connectPostgres 连接 postgres

@@ -2,7 +2,7 @@
 address = ":8080"
 trusted-platform = ""
 site_url = "http://localhost:8080"
-api_key = ""
+api_key = "1234567890"
 
 [shortener]
 code_length = 6
@@ -14,7 +14,7 @@ password = ""
 
 [database]
 type = "sqlite"
-log_level = 0
+log_level = 4 # 1.Silent， 2.Error, 3.Warn, 4.Info
 
 [database.sqlite]
 path = "data/shortener.db"

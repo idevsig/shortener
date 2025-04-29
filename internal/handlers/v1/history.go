@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -35,7 +34,7 @@ func (t *HistoryHandler) HistoryDeleteAll(c *gin.Context) {
 		return
 	}
 
-	log.Printf("reqQuery.IDs: %s", reqQuery.IDs)
+	// log.Printf("reqQuery.IDs: %s", reqQuery.IDs)
 	ids := strings.Split(reqQuery.IDs, ",")
 	errCode := t.logic.HistoryDeleteAll(ids)
 	if errCode != ecodes.ErrCodeSuccess {
@@ -53,6 +52,12 @@ func (t *HistoryHandler) HistoryList(c *gin.Context) {
 	if err := c.ShouldBindQuery(&reqQuery); err != nil {
 		c.JSON(http.StatusBadRequest, t.JsonRespErr(ecodes.ErrCodeInvalidParam))
 		return
+	}
+	if reqQuery.Order == "" {
+		reqQuery.Order = "DESC"
+	}
+	if reqQuery.SortBy == "" {
+		reqQuery.SortBy = "created_at"
 	}
 
 	errCode, data, pageInfo := t.logic.HistoryAll(reqQuery)

@@ -91,6 +91,7 @@ func init() {
 	rootCmd.AddCommand(newShortenDeleteCmd())
 	rootCmd.AddCommand(newShortenUpdateCmd())
 	rootCmd.AddCommand(newShortenGetCmd())
+	rootCmd.AddCommand(newShortenListCmd())
 }
 
 func initConfig() error {
@@ -196,7 +197,7 @@ func newVersionCmd() *cobra.Command {
 		Short:   "Print version information",
 		Example: `  shortener version`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("shortener %s\n", version)
+			fmt.Printf("shortener: %s\n", version)
 		},
 	}
 }

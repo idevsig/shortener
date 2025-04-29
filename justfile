@@ -79,15 +79,13 @@ clean:
     @rm -rf "{{dist_dir}}"
     @echo "Cleaned up successfully"
 
-## 参考：https://github.com/redis/go-redis/blob/master/Makefile
-
 # 启动服务(Docker)
 docker-start:
-    @DATABASE_TYPE=sqlite docker compose --profile redis -f deploy/docker/compose.yml up -d
+    @docker compose --profile valkey -f deploy/docker/compose.yml up -d
 
 # 停止服务(Docker)
 docker-stop:
-    @DATABASE_TYPE=sqlite docker compose --profile redis -f deploy/docker/compose.yml down
+    @docker compose --profile valkey -f deploy/docker/compose.yml down
 
 # 测试(启动 Docker 服务)
 test:

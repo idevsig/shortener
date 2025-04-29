@@ -2,8 +2,8 @@
 
 一个超简单的短网址管理平台。
 
-**配置前端：[shortener-frontend](https://git.jetsung.com/idev/shortener-frontend)**
-**命令行工具：[shortener](./cmd/shortener/README.md)**
+**配置前端：[shortener-frontend](https://git.jetsung.com/idev/shortener-frontend)**   
+**命令行工具：[shortener](./cmd/shortener/README.md)**   
 
 ## 命令行
 ```bash
@@ -16,8 +16,8 @@ go install go.dsig.cn/shortener/cmd/shortener@latest
 
 | Registry                                                                                   | Image                                                  |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| [**Docker Hub**](https://hub.docker.com/r/idevsig/filetas/)                                | `idevsig/shortener-server`                                    |
-| [**GitHub Container Registry**](https://github.com/idevsig/filetas/pkgs/container/filetas) | `ghcr.io/idevsig/shortener-server`                            |
+| [**Docker Hub**](https://hub.docker.com/r/idevsig/shortener-server/)                                | `idevsig/shortener-server`                                    |
+| [**GitHub Container Registry**](https://github.com/idevsig/shortener-server/pkgs/container/shortener-server) | `ghcr.io/idevsig/shortener-server`                            |
 | **Tencent Cloud Container Registry**                                                       | `ccr.ccs.tencentyun.com/idevsig/shortener-server`             |
 | **Aliyun Container Registry**                                                              | `registry.cn-guangzhou.aliyuncs.com/idevsig/shortener-server` |
 
@@ -25,8 +25,8 @@ go install go.dsig.cn/shortener/cmd/shortener@latest
 
 ### 1. 拉取代码
 ```bash
-git clone https://git.jetsung.com/idev/shortener.git
-cd shortener
+git clone https://git.jetsung.com/idev/shortener-server.git
+cd shortener-server
 ```
 
 ### 2. 修改配置
@@ -60,11 +60,11 @@ just --list
 ### Docker
 ```yaml
 ---
-# https://github.com/idevsig/shortener
+# https://github.com/idevsig/shortener-server
 
 services:
   shortener:
-    image: ghcr.io/idevsig/shortener:dev-amd64
+    image: ghcr.io/idevsig/shortener-server:dev-amd64
     container_name: shortener
     restart: unless-stopped
     ports:
@@ -110,7 +110,7 @@ services:
 
 ## 仓库镜像
 
-- https://git.jetsung.com/idev/shortener
-- https://framagit.org/idev/shortener
-- https://gitcode.com/idev/shortener
-- https://github.com/idevsig/shortener
+- https://git.jetsung.com/idev/shortener-server
+- https://framagit.org/idev/shortener-server
+- https://gitcode.com/idev/shortener-server
+- https://github.com/idevsig/shortener-server
