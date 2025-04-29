@@ -197,7 +197,7 @@ func newVersionCmd() *cobra.Command {
 		Short:   "Print version information",
 		Example: `  shortener version`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("shortener: %s\n", viper.GetString("url"))
+			fmt.Printf("shortener: %s\n", version)
 		},
 	}
 }
