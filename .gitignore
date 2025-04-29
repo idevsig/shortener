@@ -25,9 +25,10 @@ internal/dal/db/dao/gen_test.db
 bin
 dist/
 
-tmp/
-data/
-config/*/
-config.toml
-shortener-server
-shortener
+/tmp/
+/data/
+/config/*/
+/config.toml
+/shortener-server
+/shortener
+
