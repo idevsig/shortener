@@ -5,8 +5,8 @@ set -e
 
 # echo "Preinstall script"
 
-if [[ -f /opt/shortener/config/config.toml ]]; then
-  mv /opt/shortener/config/config.toml /opt/shortener/config/config.toml.bak
+if [[ -f /opt/shortener-server/config/config.toml ]]; then
+  mv /opt/shortener-server/config/config.toml /opt/shortener-server/config/config.toml.bak
 fi
 
 exit 0

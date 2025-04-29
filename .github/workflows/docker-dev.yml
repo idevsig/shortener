@@ -4,21 +4,9 @@ on:
   push:
     branches:
       - dev*
-    paths:
-      - docker-bake.hcl
-      - "deploy/docker/Dockerfile"
-      - ".github/workflows/docker-dev.yml"
-      - "internal/**"
-      - "cmd/**"
-      - "go.mod"
-      - "go.sum"
-      - "justfile"
 
 env:
-  # DOCKER_CLI_EXPERIMENTAL: enabled
-  # DOCKER_CONTENT_TRUST: 0  # 关闭 DCT
-  # BUILDX_NO_DEFAULT_ATTESTATIONS: 1  # 关键：全局禁用 attestation
-  package_name: shortener
+  package_name: shortener-server
   GHCR_SLUG: ghcr.io/${{ github.repository }}
 
 jobs:

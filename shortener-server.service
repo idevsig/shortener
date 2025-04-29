@@ -3,8 +3,8 @@ Description=Shortener Service
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/shortener
-ExecStart=shortener
+WorkingDirectory=/opt/shortener-server
+ExecStart=shortener-server
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 Restart=always

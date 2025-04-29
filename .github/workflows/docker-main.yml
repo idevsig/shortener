@@ -16,7 +16,7 @@ on:
 
 env:
   branch: main
-  package_name: shortener
+  package_name: shortener-server
   acr_registry: registry.cn-guangzhou.aliyuncs.com
   hcr_registry: swr.ap-southeast-3.myhuaweicloud.com
   tcr_registry: ccr.ccs.tencentyun.com

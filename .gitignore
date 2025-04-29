@@ -29,5 +29,5 @@ tmp/
 data/
 config/*/
 config.toml
+shortener-server
 shortener
-shorten

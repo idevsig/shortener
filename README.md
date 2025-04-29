@@ -3,6 +3,12 @@
 一个超简单的短网址管理平台。
 
 **配置前端：[shortener-frontend](https://git.jetsung.com/idev/shortener-frontend)**
+**命令行工具：[shortener](./cmd/shortener/README.md)**
+
+## 命令行
+```bash
+go install go.dsig.cn/shortener/cmd/shortener@latest
+```
 
 ## [Docker](./deploy/docker/README.md)
 
@@ -10,10 +16,10 @@
 
 | Registry                                                                                   | Image                                                  |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| [**Docker Hub**](https://hub.docker.com/r/idevsig/filetas/)                                | `idevsig/shortener`                                    |
-| [**GitHub Container Registry**](https://github.com/idevsig/filetas/pkgs/container/filetas) | `ghcr.io/idevsig/shortener`                            |
-| **Tencent Cloud Container Registry**                                                       | `ccr.ccs.tencentyun.com/idevsig/shortener`             |
-| **Aliyun Container Registry**                                                              | `registry.cn-guangzhou.aliyuncs.com/idevsig/shortener` |
+| [**Docker Hub**](https://hub.docker.com/r/idevsig/filetas/)                                | `idevsig/shortener-server`                                    |
+| [**GitHub Container Registry**](https://github.com/idevsig/filetas/pkgs/container/filetas) | `ghcr.io/idevsig/shortener-server`                            |
+| **Tencent Cloud Container Registry**                                                       | `ccr.ccs.tencentyun.com/idevsig/shortener-server`             |
+| **Aliyun Container Registry**                                                              | `registry.cn-guangzhou.aliyuncs.com/idevsig/shortener-server` |
 
 ## 开发
 

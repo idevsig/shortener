@@ -3,11 +3,10 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - "cmd*"
     paths:
-      - docker-bake.hcl
-      - "deploy/docker/Dockerfile"
-      - ".github/workflows/release.yml"
+      - ".github/workflows/release-cli.yml"
+      - "cmd/shortener/**"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +23,6 @@ jobs:
         distribution: goreleaser
         # 'latest', 'nightly', or a semver
         version: latest
-        args: release --clean
+        args: release --clean --config .goreleaser.cli.yaml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

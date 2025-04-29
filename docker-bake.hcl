@@ -20,8 +20,8 @@ target "_image" {
 
 target "_common" {
     labels = {
-        "org.opencontainers.image.source" = "https://github.com/idevsig/shortener"
-        "org.opencontainers.image.documentation" = "https://github.com/idevsig/shortener"
+        "org.opencontainers.image.source" = "https://git.jetsung.com/idev/shortener-server"
+        "org.opencontainers.image.documentation" = "https://git.jetsung.com/idev/shortener-server"
         "org.opencontainers.image.authors" = "Jetsung Chan<i@jetsung.com>"
     }
     context = "."

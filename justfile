@@ -1,7 +1,7 @@
 # Project name derived from current directory
 project_name := `basename $(pwd)`
 
-cli_name := "shorten"
+cli_name := "shortener"
 
 # Enable cross-platform compatibility by default
 # CGO_ENABLED := "0"
@@ -14,7 +14,7 @@ dist_dir := "dist"
 # 默认任务(build)
 default: build build-cli
 
-# 构建主程序(shortener)
+# 构建主程序(shortener-server)
 build:
     @echo "Building {{project_name}}..."
     @go mod tidy
@@ -22,13 +22,25 @@ build:
     @CGO_ENABLED=0 GOFLAGS="-trimpath" go build -ldflags "-s -w" -o "{{project_name}}"
     @echo "Built {{project_name}} successfully"
 
-# 构建CLI(shorten)
+# 构建CLI(shortener)
 build-cli:
-    @echo "Building {{project_name}} CLI ({{cli_name}})..."
+    @echo "Building {{cli_name}} CLI..."
     @go mod tidy
     @go generate ./... || echo "No generate tasks found, continuing..."
-    @CGO_ENABLED=0 GOFLAGS="-trimpath" go build -ldflags "-s -w" -o "{{cli_name}}" ./cmd/shorten/
+    @CGO_ENABLED=0 GOFLAGS="-trimpath" go build -ldflags "-s -w" -o "{{cli_name}}" ./cmd/shortener/
     @echo "Built {{cli_name}} successfully"
+
+# 构建快照版本(Goreleaser CLI)
+build-snapshot-cli:
+    @echo "Building {{project_name}} snapshot..."
+    @goreleaser release --snapshot --clean --config .goreleaser.cli.yaml
+    @echo "Built {{project_name}} snapshot successfully"
+
+# 构建发布版本(Goreleaser CLI)
+build-release-cli:
+    @echo "Building {{project_name}} release..."
+    @goreleaser release --clean --config .goreleaser.cli.yaml
+    @echo "Built {{project_name}} release successfully"
 
 # 构建快照版本(Goreleaser)
 build-snapshot:
